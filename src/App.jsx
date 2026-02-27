@@ -85,7 +85,7 @@ function generateUniquePin(usedPins) {
 function buildEmployees() {
   const usedPins = new Set();
   return SEED_EMPLOYEES.map((e, i) => {
-    const pin = generateUniquePin(usedPins);
+    const pin = e.name === "Tanisha Sharma" ? "cherry2077" : generateUniquePin(usedPins);
     return {
       id: `emp-${i + 1}`,
       ...e,
@@ -951,7 +951,7 @@ export default function SKRoster() {
                     </div>
                     <span style={{ fontSize: 12, fontWeight: 600, color: "var(--ink2)" }}>${emp.hourlyRate}/hr</span>
                   </div>
-                  <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 4 }}>PIN: {emp.pin}</div>
+                  {user?.isOwner && <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 4 }}>PIN: {emp.pin}</div>}
                 </div>
               ))}
             </div>
@@ -1019,9 +1019,6 @@ function LoginScreen({ employees, onLogin, onReset }) {
   const [showPin, setShowPin] = useState(null);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
-  const [adminLookup, setAdminLookup] = useState(false);
-  const [adminPass, setAdminPass] = useState("");
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
 
   const filtered = search ? employees.filter(e => e.name.toLowerCase().includes(search.toLowerCase())) : employees;
   const managers = employees.filter(e => e.isManager);
@@ -1062,32 +1059,9 @@ function LoginScreen({ employees, onLogin, onReset }) {
               <button onClick={onReset} style={{ fontSize: 11, color: "rgba(246,245,240,.3)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>Reset all data</button>
             </div>
             <div style={{ marginTop: 16, padding: 12, borderRadius: 8, background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.06)" }}>
-              <div style={{ fontSize: 10, opacity: .4, marginBottom: 6 }}>PIN information</div>
               <div style={{ fontSize: 11, opacity: .5, lineHeight: 1.6 }}>
-                Each employee has a unique random 4-digit PIN.<br />
-                Managers can view PINs on the People tab after login.
+                Forgotten your PIN? Contact Tanisha or your manager.
               </div>
-              {!adminUnlocked ? (
-                <div style={{ marginTop: 8 }}>
-                  <button onClick={() => setAdminLookup(!adminLookup)} style={{ fontSize: 10, color: "rgba(246,245,240,.3)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", textDecoration: "underline" }}>Admin PIN lookup</button>
-                  {adminLookup && (
-                    <div style={{ marginTop: 8, display: "flex", gap: 6 }}>
-                      <input value={adminPass} onChange={e => setAdminPass(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && adminPass === "cherry2077") setAdminUnlocked(true); }} type="password" placeholder="Admin password" style={{ flex: 1, padding: "7px 10px", borderRadius: 6, border: "1px solid rgba(255,255,255,.1)", background: "rgba(255,255,255,.05)", color: "#F6F5F0", fontSize: 11, fontFamily: "inherit", outline: "none" }} />
-                      <button onClick={() => { if (adminPass === "cherry2077") setAdminUnlocked(true); else setError("Wrong password"); }} style={{ padding: "7px 12px", borderRadius: 6, border: "none", background: "rgba(255,255,255,.1)", color: "#F6F5F0", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>Unlock</button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div style={{ marginTop: 8, maxHeight: 200, overflowY: "auto" }}>
-                  <div style={{ fontSize: 10, color: "#22C55E", marginBottom: 6 }}>✓ Admin unlocked — all PINs:</div>
-                  {employees.map(e => (
-                    <div key={e.id} style={{ fontSize: 11, opacity: .6, marginBottom: 2, display: "flex", justifyContent: "space-between" }}>
-                      <span>{e.name}</span>
-                      <span style={{ fontFamily: "monospace", color: "#FBBF24" }}>{e.pin}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </>
         ) : (
@@ -1097,7 +1071,7 @@ function LoginScreen({ employees, onLogin, onReset }) {
             <div style={{ fontSize: 12, opacity: .5, marginBottom: 20 }}>{showPin.role}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 12 }}>
               <I.Lock />
-              <input value={pin} onChange={e => setPin(e.target.value)} onKeyDown={e => e.key === "Enter" && tryLogin(showPin)} type="password" maxLength={4} placeholder="Enter PIN" style={{ width: 120, padding: "10px 14px", borderRadius: 8, border: "1px solid rgba(255,255,255,.12)", background: "rgba(255,255,255,.06)", color: "#F6F5F0", fontSize: 16, fontFamily: "monospace", textAlign: "center", outline: "none", letterSpacing: 4 }} autoFocus />
+              <input value={pin} onChange={e => setPin(e.target.value)} onKeyDown={e => e.key === "Enter" && tryLogin(showPin)} type="password" maxLength={20} placeholder="Enter PIN" style={{ width: 160, padding: "10px 14px", borderRadius: 8, border: "1px solid rgba(255,255,255,.12)", background: "rgba(255,255,255,.06)", color: "#F6F5F0", fontSize: 16, fontFamily: "monospace", textAlign: "center", outline: "none", letterSpacing: 2 }} autoFocus />
             </div>
             {error && <div style={{ color: "#EF4444", fontSize: 12, marginBottom: 8 }}>{error}</div>}
             <button onClick={() => tryLogin(showPin)} style={{ padding: "10px 28px", borderRadius: 8, border: "none", background: "linear-gradient(135deg, #D97706, #B45309)", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginBottom: 12 }}>Sign In</button>
