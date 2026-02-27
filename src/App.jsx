@@ -1135,9 +1135,6 @@ function LoginScreen({ employees, onLogin, onReset }) {
                 </button>
               ))}
             </div>
-            <div style={{ textAlign: "center", marginTop: 20 }}>
-              <button onClick={onReset} style={{ fontSize: 11, color: "rgba(246,245,240,.3)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>Reset all data</button>
-            </div>
             <div style={{ marginTop: 16, padding: 12, borderRadius: 8, background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.06)" }}>
               <div style={{ fontSize: 11, opacity: .5, lineHeight: 1.6 }}>
                 Forgotten your PIN? Contact Tanisha or your manager.
