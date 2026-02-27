@@ -991,7 +991,7 @@ export default function SKRoster() {
                       <span style={tagSt("#7E22CE")}>PL: {emp.leaveBalance.personal}d</span>
                       <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 3, background: emp.employmentType === "casual" ? "rgba(107,107,107,.1)" : emp.employmentType === "part-time" ? "rgba(14,165,233,.1)" : "rgba(34,197,94,.1)", color: emp.employmentType === "casual" ? "#6B6B6B" : emp.employmentType === "part-time" ? "#0EA5E9" : "#22C55E", fontWeight: 600 }}>{emp.employmentType === "full-time" ? "FT" : emp.employmentType === "part-time" ? `PT ${emp.daysPerWeek || 3}d/wk` : "CAS"}</span>
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--ink2)" }}>${emp.hourlyRate}/hr</span>
+                    {(user?.isOwner || user?.isAccounts) && <span style={{ fontSize: 12, fontWeight: 600, color: "var(--ink2)" }}>${emp.hourlyRate}/hr</span>}
                   </div>
                   {user?.isOwner && <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 4 }}>PIN: {emp.pin}</div>}
                   {(user?.isOwner || user?.isAccounts) && <button onClick={() => setModal({ type: "editLeaveBalance", emp })} style={{ fontSize: 10, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "4px 10px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginTop: 6 }}>Edit Leave Balances</button>}
