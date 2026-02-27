@@ -182,6 +182,7 @@ const CSS = `
 body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--ink); }
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+nav::-webkit-scrollbar { display: none; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -618,28 +619,30 @@ export default function SKRoster() {
       )}
 
       {/* Header */}
-      <header style={{ background: "var(--ink)", color: "var(--bg)", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, position: "sticky", top: 0, zIndex: 100 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, #D97706, #B45309)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 11, fontFamily: "'Fraunces', serif", color: "#fff" }}>SK</div>
-          <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: -0.3 }}>SK Roster</span>
-          {isManager && !user?.isOwner && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: "rgba(217,119,6,.25)", color: "#FBBF24", fontWeight: 600, marginLeft: 4 }}>MANAGER</span>}
-          {user?.isOwner && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: "rgba(220,38,38,.2)", color: "#F87171", fontWeight: 600, marginLeft: 4 }}>OWNER</span>}
-          {isAccounts && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: "rgba(29,78,216,.25)", color: "#60A5FA", fontWeight: 600, marginLeft: 4 }}>ACCOUNTS</span>}
+      <header style={{ background: "var(--ink)", color: "var(--bg)", position: "sticky", top: 0, zIndex: 100 }}>
+        <div style={{ padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 48 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 7, background: "linear-gradient(135deg, #D97706, #B45309)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 10, fontFamily: "'Fraunces', serif", color: "#fff" }}>SK</div>
+            <span style={{ fontWeight: 600, fontSize: 14, letterSpacing: -0.3 }}>SK Roster</span>
+            {isManager && !user?.isOwner && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "rgba(217,119,6,.25)", color: "#FBBF24", fontWeight: 600 }}>MANAGER</span>}
+            {user?.isOwner && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "rgba(220,38,38,.2)", color: "#F87171", fontWeight: 600 }}>OWNER</span>}
+            {isAccounts && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "rgba(29,78,216,.25)", color: "#60A5FA", fontWeight: 600 }}>ACCOUNTS</span>}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 11, fontWeight: 500 }}>{user.name}</div>
+              <div style={{ fontSize: 9, opacity: .5 }}>{user.dept}</div>
+            </div>
+            <button onClick={logout} style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid rgba(255,255,255,.15)", background: "transparent", color: "rgba(246,245,240,.6)", cursor: "pointer", fontSize: 10, fontFamily: "inherit" }}>Sign out</button>
+          </div>
         </div>
-        <nav style={{ display: "flex", gap: 1 }}>
+        <nav style={{ display: "flex", gap: 1, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", padding: "0 12px 8px", borderTop: "1px solid rgba(255,255,255,.06)" }}>
           {currentTabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: 7, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 500, fontFamily: "inherit", background: tab === t.id ? "rgba(255,255,255,.12)" : "transparent", color: tab === t.id ? "#F6F5F0" : "rgba(246,245,240,.4)", transition: "all .2s" }}>
-              <t.icon size={15} /> {t.label}
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 7, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 500, fontFamily: "inherit", background: tab === t.id ? "rgba(255,255,255,.12)" : "transparent", color: tab === t.id ? "#F6F5F0" : "rgba(246,245,240,.4)", transition: "all .2s", whiteSpace: "nowrap", flexShrink: 0 }}>
+              <t.icon size={14} /> {t.label}
             </button>
           ))}
         </nav>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 12, fontWeight: 500 }}>{user.name}</div>
-            <div style={{ fontSize: 10, opacity: .5 }}>{user.dept}</div>
-          </div>
-          <button onClick={logout} style={{ padding: "5px 10px", borderRadius: 6, border: "1px solid rgba(255,255,255,.15)", background: "transparent", color: "rgba(246,245,240,.6)", cursor: "pointer", fontSize: 11, fontFamily: "inherit" }}>Sign out</button>
-        </div>
       </header>
 
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "16px 20px" }}>
