@@ -1,0 +1,30 @@
+import { db } from "./firebaseConfig";
+import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
+
+const COLLECTION = "sk-roster";
+
+export async function fbLoad(key) {
+  try {
+    const snap = await getDoc(doc(db, COLLECTION, key));
+    return snap.exists() ? snap.data().value : null;
+  } catch (e) {
+    console.error("Firebase load failed:", key, e);
+    return null;
+  }
+}
+
+export async function fbSave(key, data) {
+  try {
+    await setDoc(doc(db, COLLECTION, key), { value: data, updatedAt: new Date().toISOString() });
+  } catch (e) {
+    console.error("Firebase save failed:", key, e);
+  }
+}
+
+export function fbListen(key, callback) {
+  return onSnapshot(doc(db, COLLECTION, key), (snap) => {
+    if (snap.exists()) {
+      callback(snap.data().value);
+    }
+  });
+}
