@@ -94,7 +94,7 @@ function buildEmployees() {
       isManager: e.name === "Gopi Dhamija" || e.name === "Prateek Kumar" || e.name === "Tanisha Sharma",
       isAccounts: e.name === "Raj Krishna",
       isOwner: e.name === "Tanisha Sharma",
-      canExportMYOB: e.name === "Gopi Dhamija" || e.name === "Raj Krishna" || e.name === "Tanisha Sharma",
+      canExportMYOB: e.name === "Gopi Dhamija" || e.name === "Prateek Kumar" || e.name === "Raj Krishna" || e.name === "Tanisha Sharma",
       clockedIn: false,
       clockInTime: null,
       hourlyRate: e.rate,
@@ -583,7 +583,7 @@ export default function SKRoster() {
   // ─── TABS ──────────────────────────────────────────────────────────
   const isAccounts = user?.isAccounts;
   const canExport = user?.canExportMYOB;
-  const canAddEmployee = user?.name === "Gopi Dhamija" || user?.name === "Raj Krishna" || user?.name === "Tanisha Sharma";
+  const canAddEmployee = user?.name === "Gopi Dhamija" || user?.name === "Prateek Kumar" || user?.name === "Raj Krishna" || user?.name === "Tanisha Sharma";
 
   const managerTabs = [
     { id: "roster", label: "Roster", icon: I.Calendar },
@@ -1019,13 +1019,41 @@ function LoginScreen({ employees, onLogin, onReset }) {
   const [showPin, setShowPin] = useState(null);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
+  const [attempts, setAttempts] = useState(0);
+  const [locked, setLocked] = useState(false);
+  const [lockTimer, setLockTimer] = useState(0);
 
   const filtered = search ? employees.filter(e => e.name.toLowerCase().includes(search.toLowerCase())) : employees;
   const managers = employees.filter(e => e.isManager);
 
   const tryLogin = (emp) => {
+    if (locked) return;
     if (pin === emp.pin) { onLogin(emp); }
-    else { setError("Incorrect PIN"); setTimeout(() => setError(""), 2000); }
+    else {
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      if (newAttempts >= 3) {
+        setLocked(true);
+        setError("Too many attempts. Locked for 60 seconds.");
+        let remaining = 60;
+        setLockTimer(remaining);
+        const interval = setInterval(() => {
+          remaining -= 1;
+          setLockTimer(remaining);
+          if (remaining <= 0) {
+            clearInterval(interval);
+            setLocked(false);
+            setAttempts(0);
+            setError("");
+            setLockTimer(0);
+          }
+        }, 1000);
+      } else {
+        setError(`Incorrect PIN (${3 - newAttempts} attempts remaining)`);
+        setTimeout(() => setError(""), 2000);
+      }
+      setPin("");
+    }
   };
 
   return (
@@ -1071,12 +1099,12 @@ function LoginScreen({ employees, onLogin, onReset }) {
             <div style={{ fontSize: 12, opacity: .5, marginBottom: 20 }}>{showPin.role}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 12 }}>
               <I.Lock />
-              <input value={pin} onChange={e => setPin(e.target.value)} onKeyDown={e => e.key === "Enter" && tryLogin(showPin)} type="password" maxLength={20} placeholder="Enter PIN" style={{ width: 160, padding: "10px 14px", borderRadius: 8, border: "1px solid rgba(255,255,255,.12)", background: "rgba(255,255,255,.06)", color: "#F6F5F0", fontSize: 16, fontFamily: "monospace", textAlign: "center", outline: "none", letterSpacing: 2 }} autoFocus />
+              <input value={pin} onChange={e => !locked && setPin(e.target.value)} onKeyDown={e => e.key === "Enter" && tryLogin(showPin)} type="password" maxLength={20} placeholder={locked ? "Locked" : "Enter PIN"} disabled={locked} style={{ width: 160, padding: "10px 14px", borderRadius: 8, border: locked ? "1px solid rgba(239,68,68,.3)" : "1px solid rgba(255,255,255,.12)", background: locked ? "rgba(239,68,68,.08)" : "rgba(255,255,255,.06)", color: "#F6F5F0", fontSize: 16, fontFamily: "monospace", textAlign: "center", outline: "none", letterSpacing: 2, opacity: locked ? .5 : 1 }} autoFocus />
             </div>
-            {error && <div style={{ color: "#EF4444", fontSize: 12, marginBottom: 8 }}>{error}</div>}
-            <button onClick={() => tryLogin(showPin)} style={{ padding: "10px 28px", borderRadius: 8, border: "none", background: "linear-gradient(135deg, #D97706, #B45309)", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginBottom: 12 }}>Sign In</button>
+            {error && <div style={{ color: "#EF4444", fontSize: 12, marginBottom: 8 }}>{error}{locked && lockTimer > 0 ? ` (${lockTimer}s)` : ""}</div>}
+            <button onClick={() => tryLogin(showPin)} disabled={locked} style={{ padding: "10px 28px", borderRadius: 8, border: "none", background: locked ? "rgba(255,255,255,.1)" : "linear-gradient(135deg, #D97706, #B45309)", color: "#fff", fontSize: 14, fontWeight: 600, cursor: locked ? "not-allowed" : "pointer", fontFamily: "inherit", marginBottom: 12, opacity: locked ? .4 : 1 }}>Sign In</button>
             <br />
-            <button onClick={() => { setShowPin(null); setPin(""); }} style={{ fontSize: 12, color: "rgba(246,245,240,.4)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
+            <button onClick={() => { setShowPin(null); setPin(""); setAttempts(0); setError(""); }} style={{ fontSize: 12, color: "rgba(246,245,240,.4)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>← Back</button>
           </div>
         )}
       </div>
