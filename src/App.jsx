@@ -99,6 +99,8 @@ function buildEmployees() {
       clockInTime: null,
       hourlyRate: e.rate,
       leaveBalance: { annual: 20, sick: 10, personal: 3 },
+      employmentType: "full-time", // full-time, part-time, casual
+      daysPerWeek: 5, // for part-time accrual calculation
     };
   });
 }
@@ -330,6 +332,41 @@ export default function SKRoster() {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 2800);
   }, []);
+
+  // ─── MONTHLY LEAVE ACCRUAL ─────────────────────────────────────────
+  useEffect(() => {
+    if (!ready || employees.length === 0) return;
+    const now = new Date();
+    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const accrualKey = "lastAccrual";
+
+    (async () => {
+      const lastAccrual = await load(accrualKey);
+      if (lastAccrual === monthKey) return; // already accrued this month
+
+      // Full-time monthly rates
+      const FT_ANNUAL = 1.67, FT_SICK = 0.83, FT_PERSONAL = 0.25;
+
+      const updated = employees.map(emp => {
+        const type = emp.employmentType || "full-time";
+        if (type === "casual") return emp; // casuals don't accrue
+
+        const ratio = type === "part-time" ? (emp.daysPerWeek || 3) / 5 : 1;
+        return {
+          ...emp,
+          leaveBalance: {
+            annual: Math.round((emp.leaveBalance.annual + FT_ANNUAL * ratio) * 100) / 100,
+            sick: Math.round((emp.leaveBalance.sick + FT_SICK * ratio) * 100) / 100,
+            personal: Math.round((emp.leaveBalance.personal + FT_PERSONAL * ratio) * 100) / 100,
+          }
+        };
+      });
+
+      setEmployees(updated);
+      await save(STORE_KEYS.employees, updated);
+      await save(accrualKey, monthKey);
+    })();
+  }, [ready, employees.length]);
 
   // ─── AUTH ──────────────────────────────────────────────────────────
   const login = (emp) => { setUser(emp); setTab("roster"); };
@@ -702,9 +739,13 @@ export default function SKRoster() {
                       const iso = fmtDate(d, "iso");
                       const shift = getShift(emp.id, iso);
                       const isToday = iso === fmtDate(new Date(), "iso");
+                      // Check if employee has approved leave on this day
+                      const onLeave = leaves.some(l => l.status === "approved" && l.empId === emp.id && iso >= l.startDate && iso <= l.endDate);
                       return (
-                        <div key={di} style={{ padding: "4px 3px", display: "flex", alignItems: "center", justifyContent: "center", borderLeft: "1px solid #f3f2ee", background: isToday ? "rgba(180,83,9,.02)" : "transparent" }}>
-                          {shift ? (
+                        <div key={di} style={{ padding: "4px 3px", display: "flex", alignItems: "center", justifyContent: "center", borderLeft: "1px solid #f3f2ee", background: onLeave ? "rgba(239,68,68,.04)" : isToday ? "rgba(180,83,9,.02)" : "transparent" }}>
+                          {onLeave ? (
+                            <div style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: "rgba(239,68,68,.08)", color: "#DC2626", fontSize: 8, fontWeight: 600, border: "1px solid rgba(239,68,68,.15)", textAlign: "center", lineHeight: 1.3 }}>On<br/>Leave</div>
+                          ) : shift ? (
                             <button onClick={() => removeShift(emp.id, iso)} title="Click to remove" style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: SHIFTS[shift]?.bg || "#f0f0f0", color: SHIFTS[shift]?.color || "#333", fontSize: 9, fontWeight: 600, border: `1px solid ${SHIFTS[shift]?.color || "#ccc"}22`, cursor: "pointer", fontFamily: "inherit", lineHeight: 1.2, textAlign: "center", transition: "transform .15s" }} onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
                               {SHIFTS[shift]?.label?.replace(" Process", " Proc") || shift}
                               <div style={{ fontSize: 8, fontWeight: 400, opacity: .7, marginTop: 1 }}>{SHIFTS[shift]?.time?.split("–")[0]?.trim()}</div>
@@ -944,14 +985,16 @@ export default function SKRoster() {
                     </div>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                    <div style={{ display: "flex", gap: 5 }}>
+                    <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
                       <span style={tagSt("var(--accent)")}>AL: {emp.leaveBalance.annual}d</span>
                       <span style={tagSt("var(--blue)")}>SL: {emp.leaveBalance.sick}d</span>
                       <span style={tagSt("#7E22CE")}>PL: {emp.leaveBalance.personal}d</span>
+                      <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 3, background: emp.employmentType === "casual" ? "rgba(107,107,107,.1)" : emp.employmentType === "part-time" ? "rgba(14,165,233,.1)" : "rgba(34,197,94,.1)", color: emp.employmentType === "casual" ? "#6B6B6B" : emp.employmentType === "part-time" ? "#0EA5E9" : "#22C55E", fontWeight: 600 }}>{emp.employmentType === "full-time" ? "FT" : emp.employmentType === "part-time" ? `PT ${emp.daysPerWeek || 3}d/wk` : "CAS"}</span>
                     </div>
                     <span style={{ fontSize: 12, fontWeight: 600, color: "var(--ink2)" }}>${emp.hourlyRate}/hr</span>
                   </div>
                   {user?.isOwner && <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 4 }}>PIN: {emp.pin}</div>}
+                  {(user?.isOwner || user?.isAccounts) && <button onClick={() => setModal({ type: "editLeaveBalance", emp })} style={{ fontSize: 10, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "4px 10px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginTop: 6 }}>Edit Leave Balances</button>}
                 </div>
               ))}
             </div>
@@ -984,7 +1027,7 @@ export default function SKRoster() {
             )}
 
             {/* New Leave */}
-            {modal.type === "newLeave" && <LeaveForm onSubmit={submitLeave} onCancel={() => setModal(null)} />}
+            {modal.type === "newLeave" && <LeaveForm onSubmit={submitLeave} onCancel={() => setModal(null)} user={user} roster={roster} weekStart={weekStart} />}
 
             {/* New Swap */}
             {modal.type === "newSwap" && <SwapForm employees={employees} user={user} wk={wk} days={days} getShift={getShift} onSubmit={submitSwap} onCancel={() => setModal(null)} />}
@@ -1002,6 +1045,15 @@ export default function SKRoster() {
                 </div>
               </>
             )}
+
+            {/* Edit Leave Balance */}
+            {modal.type === "editLeaveBalance" && <EditLeaveBalanceForm emp={modal.emp} onSave={(empId, newBalances, empType, dpw) => {
+              const updated = employees.map(e => e.id === empId ? { ...e, leaveBalance: newBalances, employmentType: empType, daysPerWeek: dpw } : e);
+              setEmployees(updated);
+              persist(STORE_KEYS.employees, updated);
+              notify(`Leave balances updated for ${modal.emp.name}`);
+              setModal(null);
+            }} onCancel={() => setModal(null)} />}
 
             <button onClick={() => setModal(null)} style={{ marginTop: 12, width: "100%", padding: 9, borderRadius: 7, border: "1px solid var(--border)", background: "var(--surface2)", cursor: "pointer", fontFamily: "inherit", fontWeight: 500, fontSize: 12, color: "var(--ink2)" }}>Cancel</button>
           </div>
@@ -1115,11 +1167,58 @@ function LoginScreen({ employees, onLogin, onReset }) {
 // ═════════════════════════════════════════════════════════════════════
 // LEAVE FORM
 // ═════════════════════════════════════════════════════════════════════
-function LeaveForm({ onSubmit, onCancel }) {
+function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
   const [type, setType] = useState(LEAVE_TYPES[0]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
+
+  // Date restrictions based on leave type
+  const isSick = type === "Sick Leave";
+  const today = new Date();
+  const todayStr = today.toISOString().split("T")[0];
+
+  let minStart, maxStart, dateHint;
+  if (isSick) {
+    // Sick leave: any date from today, but warn on short notice
+    minStart = todayStr;
+    maxStart = undefined;
+    dateHint = null;
+  } else if (type === "Workers Comp" || type === "Unpaid Leave" || type === "Parental Leave") {
+    minStart = todayStr;
+    maxStart = undefined;
+    dateHint = null;
+  } else {
+    // Annual & Personal: 14 days notice
+    const twoWeeks = new Date(today);
+    twoWeeks.setDate(twoWeeks.getDate() + 14);
+    minStart = twoWeeks.toISOString().split("T")[0];
+    maxStart = undefined;
+    dateHint = "Minimum 2 weeks notice required";
+  }
+
+  // Check if selected sick leave date falls on a rostered shift TODAY
+  const isShortNoticeSick = (() => {
+    if (!isSick || !startDate) return false;
+    if (startDate !== todayStr) return false; // only warn if start date is today
+    // Check if employee has a shift on that date
+    if (!user || !roster) return false;
+    const selectedDate = new Date(startDate + "T00:00:00");
+    const wkStart = getWeekStart(selectedDate);
+    const wk = weekKey(wkStart);
+    const dayKey = fmtDate(selectedDate, "iso");
+    const rosterWeek = roster[wk];
+    if (!rosterWeek) return false;
+    const shift = rosterWeek[`${user.id}_${dayKey}`];
+    return !!shift; // true if they have a shift that day
+  })();
+
+  // Reset dates when type changes if they fall outside new range
+  const handleTypeChange = (newType) => {
+    setType(newType);
+    setStartDate("");
+    setEndDate("");
+  };
 
   return (
     <>
@@ -1127,14 +1226,73 @@ function LeaveForm({ onSubmit, onCancel }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <div>
           <label style={labelSt}>Leave Type</label>
-          <select value={type} onChange={e => setType(e.target.value)} style={inputSt}>{LEAVE_TYPES.map(t => <option key={t}>{t}</option>)}</select>
+          <select value={type} onChange={e => handleTypeChange(e.target.value)} style={inputSt}>{LEAVE_TYPES.map(t => <option key={t}>{t}</option>)}</select>
         </div>
+        {dateHint && <div style={{ fontSize: 11, color: isSick ? "var(--blue)" : "var(--accent)", padding: "6px 10px", borderRadius: 6, background: isSick ? "var(--blue-bg)" : "var(--accent-bg)" }}>{dateHint}</div>}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          <div><label style={labelSt}>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputSt} /></div>
-          <div><label style={labelSt}>End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} style={inputSt} /></div>
+          <div><label style={labelSt}>Start Date</label><input type="date" value={startDate} min={minStart} max={maxStart} onChange={e => setStartDate(e.target.value)} style={inputSt} /></div>
+          <div><label style={labelSt}>End Date</label><input type="date" value={endDate} min={startDate || minStart} onChange={e => setEndDate(e.target.value)} style={inputSt} /></div>
         </div>
-        <div><label style={labelSt}>Reason</label><input value={reason} onChange={e => setReason(e.target.value)} placeholder="Brief reason..." style={inputSt} /></div>
+        {isShortNoticeSick && <div style={{ fontSize: 11, color: "#DC2626", padding: "8px 10px", borderRadius: 6, background: "rgba(220,38,38,.08)", border: "1px solid rgba(220,38,38,.15)", lineHeight: 1.5 }}>⚠️ You are scheduled to work on this day. Short notice sick leave approval is not guaranteed without supporting documentation.</div>}
+        <div><label style={labelSt}>{isSick ? "Reason (attach medical certificate by email)" : "Reason"}</label><input value={reason} onChange={e => setReason(e.target.value)} placeholder={isSick ? "e.g. Unwell — certificate to follow" : "Brief reason..."} style={inputSt} /></div>
         <button onClick={() => { if (startDate && endDate) onSubmit({ type, startDate, endDate, reason }); }} disabled={!startDate || !endDate} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity: (!startDate || !endDate) ? .5 : 1 }}>Submit Request</button>
+      </div>
+    </>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// EDIT LEAVE BALANCE FORM
+// ═════════════════════════════════════════════════════════════════════
+function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
+  const [annual, setAnnual] = useState(emp.leaveBalance.annual);
+  const [sick, setSick] = useState(emp.leaveBalance.sick);
+  const [personal, setPersonal] = useState(emp.leaveBalance.personal);
+  const [employmentType, setEmploymentType] = useState(emp.employmentType || "full-time");
+  const [daysPerWeek, setDaysPerWeek] = useState(emp.daysPerWeek || 5);
+
+  const numInput = { width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface2)", color: "var(--ink)", fontSize: 14, fontFamily: "inherit", outline: "none", textAlign: "center" };
+
+  return (
+    <>
+      <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Edit Leave Balances</h3>
+      <div style={{ fontSize: 13, color: "var(--ink2)", marginBottom: 14 }}>{emp.name}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div>
+          <label style={labelSt}>Employment Type</label>
+          <select value={employmentType} onChange={e => setEmploymentType(e.target.value)} style={{ ...numInput, textAlign: "left" }}>
+            <option value="full-time">Full-time (accrues 1.67 AL / 0.83 SL / 0.25 PL per month)</option>
+            <option value="part-time">Part-time (pro-rata accrual based on days per week)</option>
+            <option value="casual">Casual (no leave accrual)</option>
+          </select>
+        </div>
+        {employmentType === "part-time" && (
+          <div>
+            <label style={labelSt}>Days per week</label>
+            <select value={daysPerWeek} onChange={e => setDaysPerWeek(parseInt(e.target.value))} style={numInput}>
+              <option value={1}>1 day (20% of full-time)</option>
+              <option value={2}>2 days (40% of full-time)</option>
+              <option value={3}>3 days (60% of full-time)</option>
+              <option value={4}>4 days (80% of full-time)</option>
+            </select>
+          </div>
+        )}
+        {employmentType === "casual" && (
+          <div style={{ fontSize: 11, color: "var(--ink3)", padding: "6px 10px", borderRadius: 6, background: "var(--surface2)" }}>Casual employees do not accrue leave. Leave loading is included in their hourly rate.</div>
+        )}
+        <div>
+          <label style={labelSt}>Annual Leave (days)</label>
+          <input type="number" min={0} max={99} step={0.01} value={annual} onChange={e => setAnnual(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
+        </div>
+        <div>
+          <label style={labelSt}>Sick Leave (days)</label>
+          <input type="number" min={0} max={99} step={0.01} value={sick} onChange={e => setSick(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
+        </div>
+        <div>
+          <label style={labelSt}>Personal Leave (days)</label>
+          <input type="number" min={0} max={99} step={0.01} value={personal} onChange={e => setPersonal(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
+        </div>
+        <button onClick={() => onSave(emp.id, { annual, sick, personal }, employmentType, daysPerWeek)} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>Save Balances</button>
       </div>
     </>
   );
