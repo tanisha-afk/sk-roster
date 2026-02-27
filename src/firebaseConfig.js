@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCuf35rext1GcljeXOCp5OSuxiELhcJcJM",
@@ -8,7 +9,20 @@ const firebaseConfig = {
   storageBucket: "sk-roster.firebasestorage.app",
   messagingSenderId: "963557284970",
   appId: "1:963557284970:web:7bf0a162b7b382c23d3e13"
+
 };
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+
+// Auto-authenticate anonymously
+export const authReady = new Promise((resolve) => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      resolve(user);
+    } else {
+      signInAnonymously(auth).catch(console.error);
+    }
+  });
+});
