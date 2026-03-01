@@ -4,11 +4,12 @@ import { fbLoad, fbSave, fbListen } from "./firebase-storage";
 // ─── COMPANY LOGO ─────────────────────────────────────────────────
 
 // ─── CONFIG: YOUR EXACT SHIFT PATTERNS ─────────────────────────────
-const SHIFTS = {
+const DEFAULT_SHIFTS = {
   "early-prod":    { label: "Early Production", time: "5:00 AM – 1:30 PM",  hours: 8.5, color: "#C2410C", bg: "#FFF7ED", dot: "#EA580C" },
   "morning-std":   { label: "Morning",          time: "6:00 AM – 2:30 PM",  hours: 8.5, color: "#B45309", bg: "#FFFBEB", dot: "#D97706" },
   "morning-proc":  { label: "Morning Process",  time: "7:00 AM – 3:30 PM",  hours: 8.5, color: "#0E7490", bg: "#ECFEFF", dot: "#06B6D4" },
   "morning-late":  { label: "Morning Late",     time: "7:30 AM – 4:00 PM",  hours: 8.5, color: "#7E22CE", bg: "#FAF5FF", dot: "#A855F7" },
+  "office":        { label: "Office",           time: "9:00 AM – 5:30 PM",  hours: 8.5, color: "#047857", bg: "#ECFDF5", dot: "#10B981" },
   "arvo-std":      { label: "Afternoon",        time: "3:30 PM – 12:00 AM", hours: 8.5, color: "#1D4ED8", bg: "#EFF6FF", dot: "#3B82F6" },
   "arvo-proc":     { label: "Afternoon Process", time: "5:00 PM – 1:30 AM", hours: 8.5, color: "#4338CA", bg: "#EEF2FF", dot: "#6366F1" },
 };
@@ -139,6 +140,8 @@ const STORE_KEYS = {
   leave: "leave",
   swaps: "swaps",
   timelog: "timelog",
+  shifts: "shifts",
+  notifications: "notifications",
 };
 
 async function load(key) {
@@ -165,6 +168,8 @@ const I = {
   LogOut: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>,
   Lock: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
   Download: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+  Home: (p) => <svg {...p} width={p?.size||18} height={p?.size||18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+  Bell: (p) => <svg {...p} width={p?.size||18} height={p?.size||18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>,
 };
 
 // ─── STYLES ──────────────────────────────────────────────────────────
@@ -190,6 +195,14 @@ nav::-webkit-scrollbar { display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .fade-up { animation: fadeUp .35s ease both; }
 .fade-in { animation: fadeIn .25s ease both; }
+@media print {
+  header, nav, button, .fade-up { animation: none !important; }
+  header { position: static !important; }
+  nav { display: none !important; }
+  button { display: none !important; }
+  main { padding: 0 !important; }
+  body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
 `;
 
 // ─── MYOB ACCOUNTRIGHT CSV EXPORT ─────────────────────────────────────
@@ -285,7 +298,10 @@ export default function SKRoster() {
   const [leaves, setLeaves] = useState([]);
   const [swaps, setSwaps] = useState([]);
   const [timelog, setTimelog] = useState([]);
-  const [tab, setTab] = useState("roster");
+  const [SHIFTS, setSHIFTS] = useState(DEFAULT_SHIFTS);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [tab, setTab] = useState("dashboard");
   const [weekStart, setWeekStart] = useState(getWeekStart(new Date()));
   const [toast, setToast] = useState(null);
   const [modal, setModal] = useState(null);
@@ -303,11 +319,15 @@ export default function SKRoster() {
       const l = (await load(STORE_KEYS.leave)) || [];
       const s = (await load(STORE_KEYS.swaps)) || [];
       const t = (await load(STORE_KEYS.timelog)) || [];
+      const sh = (await load(STORE_KEYS.shifts)) || DEFAULT_SHIFTS;
+      const n = (await load(STORE_KEYS.notifications)) || [];
       setEmployees(emps);
       setRoster(r);
       setLeaves(l);
       setSwaps(s);
       setTimelog(t);
+      setSHIFTS(sh);
+      setNotifications(n);
       setReady(true);
     })();
   }, []);
@@ -321,6 +341,8 @@ export default function SKRoster() {
       fbListen(STORE_KEYS.leave, (data) => { if (data) setLeaves(data); }),
       fbListen(STORE_KEYS.swaps, (data) => { if (data) setSwaps(data); }),
       fbListen(STORE_KEYS.timelog, (data) => { if (data) setTimelog(data); }),
+      fbListen(STORE_KEYS.shifts, (data) => { if (data) setSHIFTS(data); }),
+      fbListen(STORE_KEYS.notifications, (data) => { if (data) setNotifications(data); }),
     ];
     return () => unsubs.forEach(u => u());
   }, [ready]);
@@ -332,6 +354,20 @@ export default function SKRoster() {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 2800);
   }, []);
+
+  const sendNotification = useCallback(async (targetEmpIds, message, category = "general") => {
+    const notif = {
+      id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      message,
+      category,
+      targetEmpIds, // array of emp IDs, or "all" for everyone, or "managers" for managers
+      createdAt: new Date().toISOString(),
+      readBy: [],
+    };
+    const updated = [notif, ...notifications].slice(0, 100); // keep last 100
+    setNotifications(updated);
+    await save(STORE_KEYS.notifications, updated);
+  }, [notifications]);
 
   // ─── MONTHLY LEAVE ACCRUAL ─────────────────────────────────────────
   useEffect(() => {
@@ -369,7 +405,7 @@ export default function SKRoster() {
   }, [ready, employees.length]);
 
   // ─── AUTH ──────────────────────────────────────────────────────────
-  const login = (emp) => { setUser(emp); setTab("roster"); };
+  const login = (emp) => { setUser(emp); setTab(emp.isManager || emp.isAccounts ? "dashboard" : "roster"); };
   const logout = () => { setUser(null); };
   const isManager = user?.isManager;
 
@@ -405,13 +441,16 @@ export default function SKRoster() {
     await persist(STORE_KEYS.leave, next);
     setModal(null);
     notify("Leave request submitted");
+    sendNotification("managers", `${user.name} requested ${data.type} (${data.startDate} → ${data.endDate})`, "leave");
   };
 
   const handleLeave = async (id, status) => {
+    const leave = leaves.find(l => l.id === id);
     const next = leaves.map(l => l.id === id ? { ...l, status } : l);
     setLeaves(next);
     await persist(STORE_KEYS.leave, next);
     notify(`Leave ${status}`);
+    if (leave) sendNotification([leave.employeeId], `Your ${leave.type} (${leave.startDate} → ${leave.endDate}) has been ${status}`, "leave");
   };
 
   // ─── SWAP ACTIONS ──────────────────────────────────────────────────
@@ -421,6 +460,7 @@ export default function SKRoster() {
     await persist(STORE_KEYS.swaps, next);
     setModal(null);
     notify("Swap request submitted");
+    sendNotification("managers", `${user.name} requested a shift swap for ${data.date}`, "swap");
   };
 
   const handleSwap = async (id, status) => {
@@ -444,6 +484,7 @@ export default function SKRoster() {
     setSwaps(nextSwaps);
     await persist(STORE_KEYS.swaps, nextSwaps);
     notify(`Swap ${status}`);
+    if (sw) sendNotification([sw.requesterId], `Your shift swap for ${sw.date} has been ${status}`, "swap");
   };
 
   // ─── GEOLOCATION CONFIG ─────────────────────────────────────────────
@@ -597,10 +638,13 @@ export default function SKRoster() {
   };
 
   // ─── FILTERED EMPLOYEES ────────────────────────────────────────────
+  // Managers (non-owner) see Production only; Owner & Accounts see all/filtered
+  const canSeeAllDepts = user?.isOwner || user?.isAccounts;
   const filtered = useMemo(() => {
+    if (isManager && !canSeeAllDepts) return employees.filter(e => e.dept === "Production");
     if (deptFilter === "All") return employees;
     return employees.filter(e => e.dept === deptFilter);
-  }, [employees, deptFilter]);
+  }, [employees, deptFilter, isManager, canSeeAllDepts]);
 
   // ─── LOADING ───────────────────────────────────────────────────────
   if (!ready) return (
@@ -623,6 +667,7 @@ export default function SKRoster() {
   const canAddEmployee = user?.name === "Gopi Dhamija" || user?.name === "Prateek Kumar" || user?.name === "Raj Krishna" || user?.name === "Tanisha Sharma";
 
   const managerTabs = [
+    { id: "dashboard", label: "Dashboard", icon: I.Home },
     { id: "roster", label: "Roster", icon: I.Calendar },
     { id: "timesheets", label: "Timesheets", icon: I.Clock },
     { id: "leave", label: "Leave", icon: I.FileText },
@@ -630,7 +675,8 @@ export default function SKRoster() {
     { id: "people", label: "People", icon: I.Users },
   ];
   const accountsTabs = [
-    { id: "roster", label: "My Roster", icon: I.Calendar },
+    { id: "dashboard", label: "Dashboard", icon: I.Home },
+    { id: "roster", label: "Roster", icon: I.Calendar },
     { id: "timesheets", label: "Timesheets", icon: I.Clock },
     { id: "clock", label: "Clock In/Out", icon: I.Clock },
     { id: "leave", label: "Leave", icon: I.FileText },
@@ -666,12 +712,40 @@ export default function SKRoster() {
             {isAccounts && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "rgba(29,78,216,.25)", color: "#60A5FA", fontWeight: 600 }}>ACCOUNTS</span>}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button onClick={() => setShowNotifs(!showNotifs)} style={{ position: "relative", padding: "4px 6px", borderRadius: 6, border: "1px solid rgba(255,255,255,.15)", background: "transparent", color: "rgba(246,245,240,.6)", cursor: "pointer" }}>
+              <I.Bell size={15} />
+              {(() => { const unread = notifications.filter(n => !n.readBy?.includes(user.id) && (n.targetEmpIds === "all" || n.targetEmpIds === "managers" && isManager || Array.isArray(n.targetEmpIds) && n.targetEmpIds.includes(user.id))).length; return unread > 0 ? <span style={{ position: "absolute", top: -4, right: -4, width: 16, height: 16, borderRadius: 8, background: "#EF4444", color: "#fff", fontSize: 9, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{unread > 9 ? "9+" : unread}</span> : null; })()}
+            </button>
             <div style={{ textAlign: "right" }}>
               <div style={{ fontSize: 11, fontWeight: 500 }}>{user.name}</div>
               <div style={{ fontSize: 9, opacity: .5 }}>{user.dept}</div>
             </div>
             <button onClick={logout} style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid rgba(255,255,255,.15)", background: "transparent", color: "rgba(246,245,240,.6)", cursor: "pointer", fontSize: 10, fontFamily: "inherit" }}>Sign out</button>
           </div>
+        </div>
+        {/* Notification dropdown */}
+        {showNotifs && (
+          <div style={{ position: "absolute", right: 16, top: 48, width: 320, maxHeight: 400, overflowY: "auto", background: "var(--surface)", borderRadius: 12, border: "1px solid var(--border)", boxShadow: "0 8px 30px rgba(0,0,0,.15)", zIndex: 200, padding: 8 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 8px 12px" }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>Notifications</span>
+              <button onClick={async () => {
+                const updated = notifications.map(n => ({ ...n, readBy: [...new Set([...(n.readBy || []), user.id])] }));
+                setNotifications(updated);
+                await persist(STORE_KEYS.notifications, updated);
+              }} style={{ fontSize: 10, color: "var(--accent)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>Mark all read</button>
+            </div>
+            {notifications.filter(n => n.targetEmpIds === "all" || (n.targetEmpIds === "managers" && isManager) || (Array.isArray(n.targetEmpIds) && n.targetEmpIds.includes(user.id))).length === 0 ? (
+              <div style={{ padding: 20, textAlign: "center", color: "var(--ink3)", fontSize: 12 }}>No notifications</div>
+            ) : (
+              notifications.filter(n => n.targetEmpIds === "all" || (n.targetEmpIds === "managers" && isManager) || (Array.isArray(n.targetEmpIds) && n.targetEmpIds.includes(user.id))).slice(0, 20).map(n => (
+                <div key={n.id} style={{ padding: "8px 10px", borderRadius: 8, marginBottom: 4, background: n.readBy?.includes(user.id) ? "transparent" : "var(--accent-bg)", fontSize: 12, color: "var(--ink)", lineHeight: 1.4 }}>
+                  <div>{n.message}</div>
+                  <div style={{ fontSize: 9, color: "var(--ink3)", marginTop: 4 }}>{new Date(n.createdAt).toLocaleDateString()} {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
         </div>
         <nav style={{ display: "flex", gap: 1, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", padding: "0 12px 8px", borderTop: "1px solid rgba(255,255,255,.06)" }}>
           {currentTabs.map(t => (
@@ -684,8 +758,133 @@ export default function SKRoster() {
 
       <main style={{ maxWidth: 1360, margin: "0 auto", padding: "16px 20px" }}>
 
+        {/* ──── DASHBOARD (Managers, Accounts, Owner) ──── */}
+        {(isManager || isAccounts) && tab === "dashboard" && (
+          <div className="fade-up">
+            <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif", marginBottom: 16 }}>Dashboard</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+
+              {/* Today's Headcount */}
+              <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>Today's Headcount</div>
+                {(() => {
+                  const todayIso = fmtDate(new Date(), "iso");
+                  const deptEmps = canSeeAllDepts ? employees : employees.filter(e => e.dept === "Production");
+                  const shiftCounts = {};
+                  deptEmps.forEach(emp => {
+                    const shift = getShift(emp.id, todayIso);
+                    if (shift && SHIFTS[shift]) {
+                      shiftCounts[shift] = (shiftCounts[shift] || 0) + 1;
+                    }
+                  });
+                  const total = Object.values(shiftCounts).reduce((a, b) => a + b, 0);
+                  return (
+                    <>
+                      <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)", marginBottom: 8 }}>{total} <span style={{ fontSize: 14, fontWeight: 400, color: "var(--ink2)" }}>on shift today</span></div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        {Object.entries(shiftCounts).map(([k, count]) => (
+                          <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                            <span style={{ color: SHIFTS[k]?.color, fontWeight: 500 }}>{SHIFTS[k]?.label}</span>
+                            <span style={{ fontWeight: 600 }}>{count}</span>
+                          </div>
+                        ))}
+                        {total === 0 && <div style={{ fontSize: 12, color: "var(--ink3)" }}>No shifts rostered today</div>}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* On Leave This Week */}
+              <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>On Leave This Week</div>
+                {(() => {
+                  const weekDays = days.map(d => fmtDate(d, "iso"));
+                  const onLeave = employees.filter(emp =>
+                    leaves.some(l => l.status === "approved" && l.employeeId === emp.id && weekDays.some(d => d >= l.startDate && d <= l.endDate))
+                  );
+                  return onLeave.length > 0 ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      {onLeave.map(emp => {
+                        const lv = leaves.find(l => l.status === "approved" && l.employeeId === emp.id && weekDays.some(d => d >= l.startDate && d <= l.endDate));
+                        return (
+                          <div key={emp.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <div style={{ width: 22, height: 22, borderRadius: 6, background: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 88%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 600, color: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 40%)` }}>{emp.initials}</div>
+                              <span style={{ fontWeight: 500 }}>{emp.name.split(" ")[0]}</span>
+                            </div>
+                            <span style={{ fontSize: 10, color: "var(--ink3)" }}>{lv?.type?.replace(" Leave", "")}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : <div style={{ fontSize: 12, color: "var(--ink3)" }}>No one on leave this week</div>;
+                })()}
+              </div>
+
+              {/* Total Hours This Week (for Raj and Owner) */}
+              {canSeeAllDepts && (
+                <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>Rostered Hours This Week</div>
+                  {(() => {
+                    const weekDays = days.map(d => fmtDate(d, "iso"));
+                    const empHours = employees.map(emp => {
+                      let total = 0;
+                      weekDays.forEach(d => {
+                        const shift = getShift(emp.id, d);
+                        if (shift && SHIFTS[shift]) total += SHIFTS[shift].hours;
+                      });
+                      return { emp, total };
+                    }).filter(e => e.total > 0).sort((a, b) => b.total - a.total);
+                    const grandTotal = empHours.reduce((a, b) => a + b.total, 0);
+                    return (
+                      <>
+                        <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)", marginBottom: 8 }}>{grandTotal} <span style={{ fontSize: 14, fontWeight: 400, color: "var(--ink2)" }}>total hours</span></div>
+                        <div style={{ maxHeight: 200, overflowY: "auto", display: "flex", flexDirection: "column", gap: 3 }}>
+                          {empHours.slice(0, 15).map(({ emp, total }) => (
+                            <div key={emp.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 11 }}>
+                              <span>{emp.name}</span>
+                              <span style={{ fontWeight: 600, color: total > 38 ? "var(--red)" : "var(--ink)" }}>{total}h{total > 38 ? " ⚠️" : ""}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {/* Pending Requests */}
+              <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>Pending Requests</div>
+                {(() => {
+                  const pendingLeaves = leaves.filter(l => l.status === "pending");
+                  const pendingSwaps = swaps.filter(s => s.status === "pending");
+                  return (
+                    <>
+                      <div style={{ display: "flex", gap: 16, marginBottom: 10 }}>
+                        <div style={{ textAlign: "center" }}>
+                          <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Fraunces', serif", color: pendingLeaves.length > 0 ? "#DC2626" : "var(--ink3)" }}>{pendingLeaves.length}</div>
+                          <div style={{ fontSize: 10, color: "var(--ink3)" }}>Leave</div>
+                        </div>
+                        <div style={{ textAlign: "center" }}>
+                          <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Fraunces', serif", color: pendingSwaps.length > 0 ? "#D97706" : "var(--ink3)" }}>{pendingSwaps.length}</div>
+                          <div style={{ fontSize: 10, color: "var(--ink3)" }}>Swaps</div>
+                        </div>
+                      </div>
+                      {pendingLeaves.length > 0 && <button onClick={() => setTab("leave")} style={{ fontSize: 11, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "5px 12px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500 }}>Review Leave →</button>}
+                      {pendingSwaps.length > 0 && <button onClick={() => setTab("swaps")} style={{ fontSize: 11, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "5px 12px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginLeft: 6 }}>Review Swaps →</button>}
+                    </>
+                  );
+                })()}
+              </div>
+
+            </div>
+          </div>
+        )}
+
         {/* ──── MANAGER: ROSTER ──── */}
-        {isManager && tab === "roster" && (
+        {(isManager || isAccounts) && tab === "roster" && (
           <div className="fade-up">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -696,20 +895,25 @@ export default function SKRoster() {
                 <button onClick={() => { const d = new Date(weekStart); d.setDate(d.getDate() + 7); setWeekStart(d); }} style={btnIcon}><I.ChevR /></button>
                 <button onClick={() => setWeekStart(getWeekStart(new Date()))} style={{ ...btnIcon, fontSize: 11, padding: "5px 10px", width: "auto" }}>Today</button>
               </div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <select value={deptFilter} onChange={e => setDeptFilter(e.target.value)} style={selectSt}>
-                  <option>All</option>
-                  {DEPARTMENTS.map(d => <option key={d}>{d}</option>)}
-                </select>
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                {canSeeAllDepts && (
+                  <select value={deptFilter} onChange={e => setDeptFilter(e.target.value)} style={selectSt}>
+                    <option>All</option>
+                    {DEPARTMENTS.map(d => <option key={d}>{d}</option>)}
+                  </select>
+                )}
+                {isManager && !canSeeAllDepts && <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink2)" }}>Production</span>}
+                {isManager && <button onClick={() => window.print()} style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontSize: 11, fontFamily: "inherit", color: "var(--ink2)" }}><I.Download /> PDF</button>}
               </div>
             </div>
             {/* Shift Legend */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap", alignItems: "center" }}>
               {Object.entries(SHIFTS).map(([k, s]) => (
                 <div key={k} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "var(--ink2)" }}>
                   <div style={{ width: 8, height: 8, borderRadius: 2, background: s.dot }} />{s.label}
                 </div>
               ))}
+              {user?.isOwner && <button onClick={() => setModal({ type: "manageShifts" })} style={{ fontSize: 10, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "3px 8px", borderRadius: 4, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginLeft: 4 }}>+ Manage Shifts</button>}
             </div>
             {/* Grid */}
             <div style={{ background: "var(--surface)", borderRadius: "var(--radius-lg)", border: "1px solid var(--border)", overflow: "hidden" }}>
@@ -726,7 +930,17 @@ export default function SKRoster() {
                 })}
               </div>
               <div style={{ maxHeight: 480, overflowY: "auto" }}>
-                {filtered.map(emp => (
+                {[...filtered].sort((a, b) => {
+                  // Sort by earliest shift this week, then alphabetically
+                  const todayIso = fmtDate(new Date(), "iso");
+                  const shiftA = getShift(a.id, todayIso);
+                  const shiftB = getShift(b.id, todayIso);
+                  const shiftKeys = Object.keys(SHIFTS);
+                  const idxA = shiftA ? shiftKeys.indexOf(shiftA) : 999;
+                  const idxB = shiftB ? shiftKeys.indexOf(shiftB) : 999;
+                  if (idxA !== idxB) return idxA - idxB;
+                  return a.name.localeCompare(b.name);
+                }).map(emp => (
                   <div key={emp.id} style={{ display: "grid", gridTemplateColumns: "180px repeat(7, 1fr)", borderBottom: "1px solid #f3f2ee" }}>
                     <div style={{ padding: "8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
                       <div style={{ width: 28, height: 28, borderRadius: 7, background: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 88%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 600, color: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 40%)`, flexShrink: 0 }}>{emp.initials}</div>
@@ -746,12 +960,23 @@ export default function SKRoster() {
                           {onLeave ? (
                             <div style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: "rgba(239,68,68,.08)", color: "#DC2626", fontSize: 8, fontWeight: 600, border: "1px solid rgba(239,68,68,.15)", textAlign: "center", lineHeight: 1.3 }}>On<br/>Leave</div>
                           ) : shift ? (
-                            <button onClick={() => removeShift(emp.id, iso)} title="Click to remove" style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: SHIFTS[shift]?.bg || "#f0f0f0", color: SHIFTS[shift]?.color || "#333", fontSize: 9, fontWeight: 600, border: `1px solid ${SHIFTS[shift]?.color || "#ccc"}22`, cursor: "pointer", fontFamily: "inherit", lineHeight: 1.2, textAlign: "center", transition: "transform .15s" }} onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
-                              {SHIFTS[shift]?.label?.replace(" Process", " Proc") || shift}
-                              <div style={{ fontSize: 8, fontWeight: 400, opacity: .7, marginTop: 1 }}>{SHIFTS[shift]?.time?.split("–")[0]?.trim()}</div>
-                            </button>
+                            isManager ? (
+                              <button onClick={() => removeShift(emp.id, iso)} title="Click to remove" style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: SHIFTS[shift]?.bg || "#f0f0f0", color: SHIFTS[shift]?.color || "#333", fontSize: 9, fontWeight: 600, border: `1px solid ${SHIFTS[shift]?.color || "#ccc"}22`, cursor: "pointer", fontFamily: "inherit", lineHeight: 1.2, textAlign: "center", transition: "transform .15s" }} onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
+                                {SHIFTS[shift]?.label?.replace(" Process", " Proc") || shift}
+                                <div style={{ fontSize: 8, fontWeight: 400, opacity: .7, marginTop: 1 }}>{SHIFTS[shift]?.time?.split("–")[0]?.trim()}</div>
+                              </button>
+                            ) : (
+                              <div style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: SHIFTS[shift]?.bg || "#f0f0f0", color: SHIFTS[shift]?.color || "#333", fontSize: 9, fontWeight: 600, border: `1px solid ${SHIFTS[shift]?.color || "#ccc"}22`, fontFamily: "inherit", lineHeight: 1.2, textAlign: "center" }}>
+                                {SHIFTS[shift]?.label?.replace(" Process", " Proc") || shift}
+                                <div style={{ fontSize: 8, fontWeight: 400, opacity: .7, marginTop: 1 }}>{SHIFTS[shift]?.time?.split("–")[0]?.trim()}</div>
+                              </div>
+                            )
                           ) : (
-                            <button onClick={() => setModal({ type: "assignShift", empId: emp.id, empName: emp.name, day: iso })} style={{ width: 24, height: 24, borderRadius: 6, border: "1.5px dashed var(--border2)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: .3, transition: "opacity .2s" }} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = .3}><I.Plus /></button>
+                            isManager ? (
+                              <button onClick={() => setModal({ type: "assignShift", empId: emp.id, empName: emp.name, day: iso })} style={{ width: 24, height: 24, borderRadius: 6, border: "1.5px dashed var(--border2)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", opacity: .3, transition: "opacity .2s" }} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = .3}><I.Plus /></button>
+                            ) : (
+                              <div style={{ fontSize: 8, color: "var(--ink3)" }}>—</div>
+                            )
                           )}
                         </div>
                       );
@@ -764,7 +989,7 @@ export default function SKRoster() {
         )}
 
         {/* ──── EMPLOYEE: MY ROSTER ──── */}
-        {!isManager && tab === "roster" && (
+        {!isManager && !isAccounts && tab === "roster" && (
           <div className="fade-up">
             <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif", marginBottom: 4 }}>My Roster</h2>
             <p style={{ fontSize: 13, color: "var(--ink2)", marginBottom: 16 }}>Your upcoming shifts</p>
@@ -800,10 +1025,44 @@ export default function SKRoster() {
                 );
               })}
             </div>
+
+            {/* Team Roster - same department only */}
+            <h3 style={{ fontSize: 15, fontWeight: 600, fontFamily: "'Fraunces', serif", marginTop: 24, marginBottom: 12 }}>Team Roster — {user.dept}</h3>
+            <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", overflow: "hidden" }}>
+              <div style={{ display: "grid", gridTemplateColumns: `140px repeat(7, 1fr)`, fontSize: 11, fontWeight: 600 }}>
+                <div style={{ padding: "8px 12px", color: "var(--ink3)" }}>Employee</div>
+                {days.map((d, i) => {
+                  const isToday = fmtDate(d, "iso") === fmtDate(new Date(), "iso");
+                  return <div key={i} style={{ padding: "8px 4px", textAlign: "center", color: isToday ? "var(--accent)" : "var(--ink3)" }}>{fmtDate(d, "day")}<br/><span style={{ fontWeight: 700 }}>{fmtDate(d, "num")}</span></div>;
+                })}
+              </div>
+              {employees.filter(e => e.dept === user.dept && e.id !== user.id && !e.isOwner).map(emp => (
+                <div key={emp.id} style={{ display: "grid", gridTemplateColumns: `140px repeat(7, 1fr)`, borderTop: "1px solid var(--border)", alignItems: "center" }}>
+                  <div style={{ padding: "6px 12px", display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: 6, background: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 88%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 600, color: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 40%)` }}>{emp.initials}</div>
+                    <span style={{ fontSize: 11, fontWeight: 500 }}>{emp.name.split(" ")[0]}</span>
+                  </div>
+                  {days.map((d, di) => {
+                    const iso = fmtDate(d, "iso");
+                    const shift = getShift(emp.id, iso);
+                    const onLeave = leaves.some(l => l.status === "approved" && l.empId === emp.id && iso >= l.startDate && iso <= l.endDate);
+                    return (
+                      <div key={di} style={{ padding: "4px 3px", display: "flex", alignItems: "center", justifyContent: "center", borderLeft: "1px solid #f3f2ee" }}>
+                        {onLeave ? (
+                          <div style={{ fontSize: 8, fontWeight: 600, color: "#DC2626" }}>Leave</div>
+                        ) : shift ? (
+                          <div style={{ width: "92%", padding: "3px 2px", borderRadius: 5, background: SHIFTS[shift]?.bg, color: SHIFTS[shift]?.color, fontSize: 8, fontWeight: 600, textAlign: "center", border: `1px solid ${SHIFTS[shift]?.color}22` }}>{SHIFTS[shift]?.label?.replace(" Production", "").replace(" Process", " Proc")}</div>
+                        ) : (
+                          <div style={{ fontSize: 8, color: "var(--ink3)" }}>—</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
         )}
-
-        {/* ──── EMPLOYEE: CLOCK IN/OUT ──── */}
         {!isManager && tab === "clock" && (
           <ClockScreen
             user={user}
@@ -1055,6 +1314,14 @@ export default function SKRoster() {
               setModal(null);
             }} onCancel={() => setModal(null)} />}
 
+            {/* Manage Shifts */}
+            {modal.type === "manageShifts" && <ManageShiftsForm shifts={SHIFTS} onSave={(newShifts) => {
+              setSHIFTS(newShifts);
+              persist(STORE_KEYS.shifts, newShifts);
+              notify("Shift types updated");
+              setModal(null);
+            }} onCancel={() => setModal(null)} />}
+
             <button onClick={() => setModal(null)} style={{ marginTop: 12, width: "100%", padding: 9, borderRadius: 7, border: "1px solid var(--border)", background: "var(--surface2)", cursor: "pointer", fontFamily: "inherit", fontWeight: 500, fontSize: 12, color: "var(--ink2)" }}>Cancel</button>
           </div>
         </div>
@@ -1291,6 +1558,109 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
         </div>
         <button onClick={() => onSave(emp.id, { annual, sick, personal }, employmentType, daysPerWeek)} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>Save Balances</button>
       </div>
+    </>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// MANAGE SHIFTS FORM (Owner only)
+// ═════════════════════════════════════════════════════════════════════
+const SHIFT_COLORS = [
+  { color: "#C2410C", bg: "#FFF7ED", dot: "#EA580C", name: "Orange" },
+  { color: "#B45309", bg: "#FFFBEB", dot: "#D97706", name: "Amber" },
+  { color: "#0E7490", bg: "#ECFEFF", dot: "#06B6D4", name: "Cyan" },
+  { color: "#7E22CE", bg: "#FAF5FF", dot: "#A855F7", name: "Purple" },
+  { color: "#047857", bg: "#ECFDF5", dot: "#10B981", name: "Green" },
+  { color: "#1D4ED8", bg: "#EFF6FF", dot: "#3B82F6", name: "Blue" },
+  { color: "#4338CA", bg: "#EEF2FF", dot: "#6366F1", name: "Indigo" },
+  { color: "#BE123C", bg: "#FFF1F2", dot: "#F43F5E", name: "Rose" },
+  { color: "#0F766E", bg: "#F0FDFA", dot: "#14B8A6", name: "Teal" },
+  { color: "#A16207", bg: "#FEFCE8", dot: "#EAB308", name: "Yellow" },
+];
+
+function ManageShiftsForm({ shifts, onSave, onCancel }) {
+  const [localShifts, setLocalShifts] = useState({ ...shifts });
+  const [adding, setAdding] = useState(false);
+  const [newLabel, setNewLabel] = useState("");
+  const [newTime, setNewTime] = useState("");
+  const [newHours, setNewHours] = useState(8.5);
+  const [newColorIdx, setNewColorIdx] = useState(0);
+  const [editingKey, setEditingKey] = useState(null);
+  const [editLabel, setEditLabel] = useState("");
+  const [editTime, setEditTime] = useState("");
+  const [editHours, setEditHours] = useState(8.5);
+
+  const addShift = () => {
+    if (!newLabel.trim() || !newTime.trim()) return;
+    const key = newLabel.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const c = SHIFT_COLORS[newColorIdx % SHIFT_COLORS.length];
+    setLocalShifts({ ...localShifts, [key]: { label: newLabel.trim(), time: newTime.trim(), hours: newHours, color: c.color, bg: c.bg, dot: c.dot } });
+    setNewLabel(""); setNewTime(""); setNewHours(8.5); setAdding(false);
+  };
+
+  const deleteShift = (key) => {
+    const updated = { ...localShifts };
+    delete updated[key];
+    setLocalShifts(updated);
+  };
+
+  const saveEdit = (key) => {
+    setLocalShifts({ ...localShifts, [key]: { ...localShifts[key], label: editLabel, time: editTime, hours: editHours } });
+    setEditingKey(null);
+  };
+
+  const inp = { width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface2)", color: "var(--ink)", fontSize: 12, fontFamily: "inherit", outline: "none" };
+
+  return (
+    <>
+      <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 14 }}>Manage Shift Types</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 400, overflowY: "auto", marginBottom: 12 }}>
+        {Object.entries(localShifts).map(([key, s]) => (
+          <div key={key} style={{ padding: "10px 12px", borderRadius: 8, border: `1px solid ${s.color}22`, background: s.bg }}>
+            {editingKey === key ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <input value={editLabel} onChange={e => setEditLabel(e.target.value)} placeholder="Shift name" style={inp} />
+                <input value={editTime} onChange={e => setEditTime(e.target.value)} placeholder="e.g. 9:00 AM – 5:30 PM" style={inp} />
+                <input type="number" step={0.5} min={1} max={16} value={editHours} onChange={e => setEditHours(parseFloat(e.target.value) || 8)} style={inp} />
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button onClick={() => saveEdit(key)} style={{ flex: 1, padding: "6px", borderRadius: 5, border: "none", background: s.color, color: "#fff", fontSize: 11, cursor: "pointer", fontFamily: "inherit", fontWeight: 500 }}>Save</button>
+                  <button onClick={() => setEditingKey(null)} style={{ flex: 1, padding: "6px", borderRadius: 5, border: "1px solid var(--border)", background: "var(--surface)", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: s.color }}>{s.label}</div>
+                  <div style={{ fontSize: 11, color: "var(--ink2)" }}>{s.time} · {s.hours}hrs</div>
+                </div>
+                <div style={{ display: "flex", gap: 4 }}>
+                  <button onClick={() => { setEditingKey(key); setEditLabel(s.label); setEditTime(s.time); setEditHours(s.hours); }} style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
+                  <button onClick={() => deleteShift(key)} style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, border: "1px solid rgba(220,38,38,.2)", background: "rgba(220,38,38,.05)", color: "#DC2626", cursor: "pointer", fontFamily: "inherit" }}>Delete</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      {adding ? (
+        <div style={{ padding: 12, borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface2)", display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+          <input value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="Shift name (e.g. Night Shift)" style={inp} />
+          <input value={newTime} onChange={e => setNewTime(e.target.value)} placeholder="Time (e.g. 10:00 PM – 6:30 AM)" style={inp} />
+          <div style={{ display: "flex", gap: 8 }}>
+            <input type="number" step={0.5} min={1} max={16} value={newHours} onChange={e => setNewHours(parseFloat(e.target.value) || 8)} placeholder="Hours" style={{ ...inp, flex: 1 }} />
+            <select value={newColorIdx} onChange={e => setNewColorIdx(parseInt(e.target.value))} style={{ ...inp, flex: 1 }}>
+              {SHIFT_COLORS.map((c, i) => <option key={i} value={i}>{c.name}</option>)}
+            </select>
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <button onClick={addShift} style={{ flex: 1, padding: "8px", borderRadius: 6, border: "none", background: "var(--accent)", color: "#fff", fontSize: 12, cursor: "pointer", fontFamily: "inherit", fontWeight: 500 }}>Add Shift</button>
+            <button onClick={() => setAdding(false)} style={{ flex: 1, padding: "8px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Cancel</button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setAdding(true)} style={{ width: "100%", padding: "8px", borderRadius: 6, border: "1.5px dashed var(--border2)", background: "transparent", fontSize: 12, cursor: "pointer", fontFamily: "inherit", color: "var(--ink2)", marginBottom: 12 }}>+ Add New Shift Type</button>
+      )}
+      <button onClick={() => onSave(localShifts)} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>Save All Changes</button>
     </>
   );
 }
