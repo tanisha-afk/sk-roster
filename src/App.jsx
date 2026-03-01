@@ -405,7 +405,7 @@ export default function SKRoster() {
   }, [ready, employees.length]);
 
   // ─── AUTH ──────────────────────────────────────────────────────────
-  const login = (emp) => { setUser(emp); setTab(emp.isManager || emp.isAccounts ? "dashboard" : "roster"); };
+  const login = (emp) => { setUser(emp); setTab("dashboard"); };
   const logout = () => { setUser(null); };
   const isManager = user?.isManager;
 
@@ -683,6 +683,7 @@ export default function SKRoster() {
     { id: "people", label: "People", icon: I.Users },
   ];
   const empTabs = [
+    { id: "dashboard", label: "Dashboard", icon: I.Home },
     { id: "roster", label: "My Roster", icon: I.Calendar },
     { id: "clock", label: "Clock In/Out", icon: I.Clock },
     { id: "leave", label: "Leave", icon: I.FileText },
@@ -873,6 +874,97 @@ export default function SKRoster() {
                       </div>
                       {pendingLeaves.length > 0 && <button onClick={() => setTab("leave")} style={{ fontSize: 11, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "5px 12px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500 }}>Review Leave →</button>}
                       {pendingSwaps.length > 0 && <button onClick={() => setTab("swaps")} style={{ fontSize: 11, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "5px 12px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginLeft: 6 }}>Review Swaps →</button>}
+                    </>
+                  );
+                })()}
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ──── EMPLOYEE DASHBOARD ──── */}
+        {!isManager && !isAccounts && tab === "dashboard" && (
+          <div className="fade-up">
+            <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif", marginBottom: 16 }}>Welcome, {user.name.split(" ")[0]}</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+
+              {/* Today's Shift */}
+              <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>Today's Shift</div>
+                {(() => {
+                  const todayIso = fmtDate(new Date(), "iso");
+                  const shift = getShift(user.id, todayIso);
+                  const onLeave = leaves.some(l => l.status === "approved" && l.employeeId === user.id && todayIso >= l.startDate && todayIso <= l.endDate);
+                  if (onLeave) return <div style={{ fontSize: 16, fontWeight: 600, color: "#DC2626" }}>On Leave</div>;
+                  if (!shift) return <div style={{ fontSize: 16, fontWeight: 600, color: "var(--ink3)" }}>Day off</div>;
+                  return (
+                    <div>
+                      <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Fraunces', serif", color: SHIFTS[shift]?.color }}>{SHIFTS[shift]?.label}</div>
+                      <div style={{ fontSize: 14, color: "var(--ink2)", marginTop: 4 }}>{SHIFTS[shift]?.time}</div>
+                      <div style={{ fontSize: 12, color: "var(--ink3)", marginTop: 2 }}>{SHIFTS[shift]?.hours} hours</div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* My Hours This Week */}
+              <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>My Hours This Week</div>
+                {(() => {
+                  const weekDays = days.map(d => fmtDate(d, "iso"));
+                  let total = 0;
+                  const dayShifts = weekDays.map(d => {
+                    const shift = getShift(user.id, d);
+                    if (shift && SHIFTS[shift]) total += SHIFTS[shift].hours;
+                    return { date: d, shift };
+                  });
+                  return (
+                    <>
+                      <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)", marginBottom: 8 }}>{total} <span style={{ fontSize: 14, fontWeight: 400, color: "var(--ink2)" }}>hours</span></div>
+                      <div style={{ display: "flex", gap: 4 }}>
+                        {dayShifts.map((ds, i) => (
+                          <div key={i} style={{ flex: 1, textAlign: "center", padding: "4px 2px", borderRadius: 4, background: ds.shift ? (SHIFTS[ds.shift]?.bg || "#f0f0f0") : "var(--surface2)", fontSize: 9 }}>
+                            <div style={{ fontWeight: 500, color: "var(--ink3)" }}>{["M","T","W","T","F","S","S"][i]}</div>
+                            <div style={{ fontWeight: 600, color: ds.shift ? SHIFTS[ds.shift]?.color : "var(--ink3)", marginTop: 2 }}>{ds.shift ? SHIFTS[ds.shift]?.hours : "—"}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* My Pending Requests */}
+              <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>My Requests</div>
+                {(() => {
+                  const myLeaves = leaves.filter(l => l.employeeId === user.id && l.status === "pending");
+                  const mySwaps = swaps.filter(s => s.requesterId === user.id && s.status === "pending");
+                  const recentLeaves = leaves.filter(l => l.employeeId === user.id && l.status !== "pending").slice(-2);
+                  return (
+                    <>
+                      {myLeaves.length > 0 && myLeaves.map(l => (
+                        <div key={l.id} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(217,119,6,.06)", marginBottom: 4, fontSize: 12 }}>
+                          <span style={{ color: "#D97706", fontWeight: 600 }}>Pending: </span>
+                          <span>{l.type} ({l.startDate} → {l.endDate})</span>
+                        </div>
+                      ))}
+                      {mySwaps.length > 0 && mySwaps.map(s => (
+                        <div key={s.id} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(29,78,216,.06)", marginBottom: 4, fontSize: 12 }}>
+                          <span style={{ color: "#1D4ED8", fontWeight: 600 }}>Swap pending: </span>
+                          <span>{s.date}</span>
+                        </div>
+                      ))}
+                      {recentLeaves.map(l => (
+                        <div key={l.id} style={{ padding: "6px 10px", borderRadius: 6, background: l.status === "approved" ? "rgba(21,128,61,.06)" : "rgba(220,38,38,.06)", marginBottom: 4, fontSize: 12 }}>
+                          <span style={{ color: l.status === "approved" ? "#15803D" : "#DC2626", fontWeight: 600 }}>{l.status === "approved" ? "Approved" : "Declined"}: </span>
+                          <span>{l.type} ({l.startDate})</span>
+                        </div>
+                      ))}
+                      {myLeaves.length === 0 && mySwaps.length === 0 && recentLeaves.length === 0 && (
+                        <div style={{ fontSize: 12, color: "var(--ink3)" }}>No pending requests</div>
+                      )}
                     </>
                   );
                 })()}
