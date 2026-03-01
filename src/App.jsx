@@ -879,6 +879,63 @@ export default function SKRoster() {
                 })()}
               </div>
 
+              {/* Attendance This Month */}
+              <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px", gridColumn: "1 / -1" }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>Attendance This Month</div>
+                {(() => {
+                  const now = new Date();
+                  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                  const today = new Date(); today.setHours(0,0,0,0);
+                  const pastDays = [];
+                  for (let d = new Date(monthStart); d <= today; d.setDate(d.getDate() + 1)) {
+                    pastDays.push(fmtDate(new Date(d), "iso"));
+                  }
+                  if (pastDays.length === 0) return <div style={{ fontSize: 12, color: "var(--ink3)" }}>No data yet this month</div>;
+
+                  const deptEmps = canSeeAllDepts ? employees.filter(e => !e.isOwner) : employees.filter(e => e.dept === "Production" && !e.isOwner);
+                  
+                  const stats = deptEmps.map(emp => {
+                    let rostered = 0, attended = 0;
+                    pastDays.forEach(dayIso => {
+                      const dayDate = new Date(dayIso + "T00:00:00");
+                      const wkStart = getWeekStart(dayDate);
+                      const wkKey = fmtDate(wkStart, "iso");
+                      const shift = roster[wkKey]?.[emp.id]?.[dayIso];
+                      if (shift) {
+                        rostered++;
+                        const clockedIn = timelog.some(t => t.empId === emp.id && t.date === dayIso && t.type === "in");
+                        if (clockedIn) attended++;
+                      }
+                    });
+                    const rate = rostered > 0 ? Math.round((attended / rostered) * 100) : null;
+                    return { emp, rostered, attended, rate };
+                  }).filter(s => s.rostered > 0).sort((a, b) => (a.rate ?? 100) - (b.rate ?? 100));
+
+                  const monthName = now.toLocaleDateString("en-AU", { month: "long", year: "numeric" });
+
+                  return (
+                    <>
+                      <div style={{ fontSize: 11, color: "var(--ink3)", marginBottom: 8 }}>{monthName} — {pastDays.length} days tracked</div>
+                      <div style={{ maxHeight: 260, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
+                        {stats.map(({ emp, rostered, attended, rate }) => (
+                          <div key={emp.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "5px 0", borderBottom: "1px solid var(--border)" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <div style={{ width: 22, height: 22, borderRadius: 6, background: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 88%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 600, color: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 40%)` }}>{emp.initials}</div>
+                              <span style={{ fontSize: 12 }}>{emp.name}</span>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <span style={{ fontSize: 11, color: "var(--ink3)" }}>{attended}/{rostered} days</span>
+                              <span style={{ fontSize: 12, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: rate >= 95 ? "rgba(21,128,61,.08)" : rate >= 80 ? "rgba(217,119,6,.08)" : "rgba(220,38,38,.08)", color: rate >= 95 ? "#15803D" : rate >= 80 ? "#D97706" : "#DC2626" }}>{rate}%</span>
+                            </div>
+                          </div>
+                        ))}
+                        {stats.length === 0 && <div style={{ fontSize: 12, color: "var(--ink3)" }}>No rostered shifts with clock-in data yet</div>}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
             </div>
           </div>
         )}
