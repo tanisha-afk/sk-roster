@@ -746,7 +746,6 @@ export default function SKRoster() {
             )}
           </div>
         )}
-        </div>
         <nav style={{ display: "flex", gap: 1, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", padding: "0 12px 8px", borderTop: "1px solid rgba(255,255,255,.06)" }}>
           {currentTabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 7, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 500, fontFamily: "inherit", background: tab === t.id ? "rgba(255,255,255,.12)" : "transparent", color: tab === t.id ? "#F6F5F0" : "rgba(246,245,240,.4)", transition: "all .2s", whiteSpace: "nowrap", flexShrink: 0 }}>
