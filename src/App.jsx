@@ -487,7 +487,7 @@ export default function SKRoster() {
 
   // ─── GEOLOCATION CONFIG ─────────────────────────────────────────────
   const SITES = {
-    hornsby:  { name: "Hornsby Factory",  lat: -33.7042, lng: 151.0983, address: "Unit 6, 8 Leighton Place, Hornsby" },
+    hornsby:  { name: "Hornsby Factory",  lat: -33.69702, lng: 151.11281, address: "Unit 6, 8 Leighton Place, Hornsby" },
     yennora:  { name: "Yennora Office",   lat: -33.8636, lng: 150.9785, address: "5 Antill St, Yennora" },
   };
   const GEOFENCE_RADIUS = 50; // metres
