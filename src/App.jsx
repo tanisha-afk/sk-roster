@@ -1870,6 +1870,8 @@ function ClockScreen({ user, geoStatus, geoDistance, GEOFENCE_RADIUS, getEmploye
     }
   }, [pendingClock]);
 
+  const streamRef = React.useRef(null);
+
   const openCamera = async () => {
     setCapturedPhoto(null);
     setCameraError(null);
@@ -1882,14 +1884,7 @@ function ClockScreen({ user, geoStatus, geoDistance, GEOFENCE_RADIUS, getEmploye
         video: { facingMode: "user", width: { ideal: 480 }, height: { ideal: 480 } },
         audio: false
       });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute("playsinline", "true");
-        videoRef.current.setAttribute("webkit-playsinline", "true");
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play().catch(() => {});
-        };
-      }
+      streamRef.current = stream;
       setCameraActive(true);
     } catch (err) {
       console.error("Camera error:", err);
@@ -1905,6 +1900,18 @@ function ClockScreen({ user, geoStatus, geoDistance, GEOFENCE_RADIUS, getEmploye
       setCameraActive(false);
     }
   };
+
+  // Attach stream to video element after it renders
+  React.useEffect(() => {
+    if (cameraActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.setAttribute("playsinline", "true");
+      videoRef.current.setAttribute("webkit-playsinline", "true");
+      videoRef.current.onloadedmetadata = () => {
+        videoRef.current.play().catch(() => {});
+      };
+    }
+  }, [cameraActive]);
 
   const takePhoto = () => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -1928,6 +1935,10 @@ function ClockScreen({ user, geoStatus, geoDistance, GEOFENCE_RADIUS, getEmploye
     if (videoRef.current?.srcObject) {
       videoRef.current.srcObject.getTracks().forEach(t => t.stop());
       videoRef.current.srcObject = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
     }
     setCameraActive(false);
   };
