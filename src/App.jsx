@@ -20,58 +20,58 @@ const LEAVE_TYPES = ["Annual Leave", "Sick Leave", "Personal Leave", "Parental L
 // ─── SEED DATA ──────────────────────────────────────────────────────
 const SEED_EMPLOYEES = [
   // Management / Salaried
-  { name: "Raj Krishna", role: "Accounts Manager", dept: "Accounts", rate: 64.90 },
-  { name: "Gopi Dhamija", role: "Production Supervisor", dept: "Production", rate: 40.87 },
-  { name: "Prateek Kumar", role: "Production Supervisor", dept: "Production", rate: 37.30 },
-  { name: "Prabhkeerat Singh", role: "Sales Representative", dept: "Sales", rate: 32.96 },
-  { name: "Mohit Sivia", role: "Sales Representative", dept: "Sales", rate: 48.08 },
+  { name: "Raj Krishna", role: "Accounts Manager", dept: "Accounts", rate: 64.90, pin: "4104" },
+  { name: "Gopi Dhamija", role: "Production Supervisor", dept: "Production", rate: 40.87, pin: "8160" },
+  { name: "Prateek Kumar", role: "Production Supervisor", dept: "Production", rate: 37.30, pin: "1681" },
+  { name: "Prabhkeerat Singh", role: "Sales Representative", dept: "Sales", rate: 32.96, pin: "1547" },
+  { name: "Mohit Sivia", role: "Sales Representative", dept: "Sales", rate: 48.08, pin: "9738" },
   // Process Workers
-  { name: "Bushar Ahmed", role: "Process Worker", dept: "Production", rate: 29.50 },
-  { name: "Sandesh Adhikari", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Siddhant Amritkar", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Anannya Rehman Amiya", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Majid Ali", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Tikaram Badari Sharma", role: "Process Worker", dept: "Production", rate: 32.00 },
-  { name: "Kumaramanjunath Baleattiguppe Sadashivappa", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Razia Bibi", role: "Process Worker", dept: "Production", rate: 29.50 },
-  { name: "Marites Cabaltera", role: "Process Worker", dept: "Production", rate: 29.50 },
-  { name: "Chetna Chetna", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Anita Dangi", role: "Process Worker", dept: "Production", rate: 34.00 },
-  { name: "Eldefer Dequino", role: "Process Worker", dept: "Production", rate: 34.00 },
-  { name: "Tanjilalam Emon", role: "Process Worker", dept: "Production", rate: 32.00 },
-  { name: "Louie Fortes", role: "Process Worker", dept: "Production", rate: 31.50 },
-  { name: "Jahid Hasan", role: "Process Worker", dept: "Production", rate: 32.00 },
-  { name: "Mdkamrul Hasan", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Nimra Habib", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Navneet Kaur Virk", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Gurpreet Kaur", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Om Karki", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Sabnam Khadka", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Ashwani Kumar Kumar", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Sang Kyung Lee", role: "Process Worker", dept: "Production", rate: 29.50 },
-  { name: "Manoj Manjunath", role: "Process Worker", dept: "Production", rate: 33.00 },
-  { name: "Kundan Neupane", role: "Process Worker", dept: "Production", rate: 28.00 },
-  { name: "Anjali Neupane", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Sargam Nasrullah", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Bora Ozcelik", role: "Process Worker", dept: "Production", rate: 28.50 },
-  { name: "Sreejan Kumar Paul", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Amisha Pun", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Miskur Rumi", role: "Process Worker", dept: "Production", rate: 34.00 },
-  { name: "Rahul Rahul", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Yatin Sethi", role: "Process Worker", dept: "Production", rate: 34.00 },
-  { name: "Vijay Sharma", role: "Process Worker", dept: "Production", rate: 31.50 },
-  { name: "Nidhi Sharma", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Harshit Sharma", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Karthik Shelvaraju", role: "Process Worker", dept: "Production", rate: 28.00 },
-  { name: "Abhay Singh", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Ragwinder Singh", role: "Process Worker", dept: "Production", rate: 29.50 },
-  { name: "Devkaran Singh", role: "Process Worker", dept: "Production", rate: 29.00 },
-  { name: "Rohan Sood", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Surendra Sunar", role: "Process Worker", dept: "Production", rate: 26.00 },
-  { name: "Samundra Tuladhar", role: "Process Worker", dept: "Production", rate: 34.00 },
-  { name: "Yash Yash", role: "Process Worker", dept: "Production", rate: 29.00 },
+  { name: "Bushar Ahmed", role: "Process Worker", dept: "Production", rate: 29.50, pin: "1943" },
+  { name: "Sandesh Adhikari", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3819" },
+  { name: "Siddhant Amritkar", role: "Process Worker", dept: "Production", rate: 29.00, pin: "8175" },
+  { name: "Anannya Rehman Amiya", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5693" },
+  { name: "Majid Ali", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9529" },
+  { name: "Tikaram Badari Sharma", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1380" },
+  { name: "Kumaramanjunath Baleattiguppe Sadashivappa", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1797" },
+  { name: "Razia Bibi", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5316" },
+  { name: "Marites Cabaltera", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9821" },
+  { name: "Chetna Chetna", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6999" },
+  { name: "Anita Dangi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "1354" },
+  { name: "Eldefer Dequino", role: "Process Worker", dept: "Production", rate: 34.00, pin: "3608" },
+  { name: "Tanjilalam Emon", role: "Process Worker", dept: "Production", rate: 32.00, pin: "3204" },
+  { name: "Louie Fortes", role: "Process Worker", dept: "Production", rate: 31.50, pin: "8533" },
+  { name: "Jahid Hasan", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1818" },
+  { name: "Mdkamrul Hasan", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3996" },
+  { name: "Nimra Habib", role: "Process Worker", dept: "Production", rate: 26.00, pin: "8823" },
+  { name: "Navneet Kaur Virk", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5250" },
+  { name: "Gurpreet Kaur", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6770" },
+  { name: "Om Karki", role: "Process Worker", dept: "Production", rate: 26.00, pin: "4221" },
+  { name: "Sabnam Khadka", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1284" },
+  { name: "Ashwani Kumar Kumar", role: "Process Worker", dept: "Production", rate: 26.00, pin: "2855" },
+  { name: "Sang Kyung Lee", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5863" },
+  { name: "Manoj Manjunath", role: "Process Worker", dept: "Production", rate: 33.00, pin: "1309" },
+  { name: "Kundan Neupane", role: "Process Worker", dept: "Production", rate: 28.00, pin: "8233" },
+  { name: "Anjali Neupane", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3206" },
+  { name: "Sargam Nasrullah", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6406" },
+  { name: "Bora Ozcelik", role: "Process Worker", dept: "Production", rate: 28.50, pin: "4952" },
+  { name: "Sreejan Kumar Paul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6970" },
+  { name: "Amisha Pun", role: "Process Worker", dept: "Production", rate: 29.00, pin: "5165" },
+  { name: "Miskur Rumi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "2602" },
+  { name: "Rahul Rahul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3422" },
+  { name: "Yatin Sethi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "9273" },
+  { name: "Vijay Sharma", role: "Process Worker", dept: "Production", rate: 31.50, pin: "3271" },
+  { name: "Nidhi Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "2501" },
+  { name: "Harshit Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3823" },
+  { name: "Karthik Shelvaraju", role: "Process Worker", dept: "Production", rate: 28.00, pin: "4934" },
+  { name: "Abhay Singh", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5292" },
+  { name: "Ragwinder Singh", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9140" },
+  { name: "Devkaran Singh", role: "Process Worker", dept: "Production", rate: 29.00, pin: "1819" },
+  { name: "Rohan Sood", role: "Process Worker", dept: "Production", rate: 26.00, pin: "7269" },
+  { name: "Surendra Sunar", role: "Process Worker", dept: "Production", rate: 26.00, pin: "9772" },
+  { name: "Samundra Tuladhar", role: "Process Worker", dept: "Production", rate: 34.00, pin: "4325" },
+  { name: "Yash Yash", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9236" },
   // Owner
-  { name: "Tanisha Sharma", role: "Owner", dept: "Production", rate: 0 },
+  { name: "Tanisha Sharma", role: "Owner", dept: "Production", rate: 0, pin: "cherry2077" },
 ];
 
 function generateUniquePin(usedPins) {
@@ -84,14 +84,12 @@ function generateUniquePin(usedPins) {
 }
 
 function buildEmployees() {
-  const usedPins = new Set();
   return SEED_EMPLOYEES.map((e, i) => {
-    const pin = e.name === "Tanisha Sharma" ? "cherry2077" : generateUniquePin(usedPins);
     return {
       id: `emp-${i + 1}`,
       ...e,
       initials: e.name.split(" ").filter(n => n.length > 0).slice(0, 2).map(n => n[0].toUpperCase()).join(""),
-      pin,
+      pin: e.pin,
       isManager: e.name === "Gopi Dhamija" || e.name === "Prateek Kumar" || e.name === "Tanisha Sharma",
       isAccounts: e.name === "Raj Krishna",
       isOwner: e.name === "Tanisha Sharma",
@@ -100,8 +98,8 @@ function buildEmployees() {
       clockInTime: null,
       hourlyRate: e.rate,
       leaveBalance: { annual: 20, sick: 10, personal: 3 },
-      employmentType: "full-time", // full-time, part-time, casual
-      daysPerWeek: 5, // for part-time accrual calculation
+      employmentType: "full-time",
+      daysPerWeek: 5,
     };
   });
 }
@@ -489,7 +487,7 @@ export default function SKRoster() {
 
   // ─── GEOLOCATION CONFIG ─────────────────────────────────────────────
   const SITES = {
-    hornsby:  { name: "Hornsby Factory",  lat: -33.6967, lng: 151.1131, address: "8 Leighton Place, Hornsby" },
+    hornsby:  { name: "Hornsby Factory",  lat: -33.7042, lng: 151.0983, address: "Unit 6, 8 Leighton Place, Hornsby" },
     yennora:  { name: "Yennora Office",   lat: -33.8636, lng: 150.9785, address: "5 Antill St, Yennora" },
   };
   const GEOFENCE_RADIUS = 50; // metres
@@ -530,7 +528,6 @@ export default function SKRoster() {
 
         if (dist <= GEOFENCE_RADIUS) {
           setGeoStatus("success");
-          // Don't clock in yet — pass to camera step
           setPendingClock({ action, lat: pos.coords.latitude, lng: pos.coords.longitude, distance: Math.round(dist), siteName: site.name });
         } else {
           setGeoStatus("too_far");
@@ -540,11 +537,16 @@ export default function SKRoster() {
       (err) => {
         if (err.code === 1) {
           setGeoStatus("denied");
-          notify("Location permission denied. Please enable location access.", "error");
+          notify("Location permission denied. On iPhone: Settings → Safari → Location → Allow. On Android: tap the lock icon → Permissions → Location → Allow. Then refresh.", "error");
+        } else if (err.code === 3) {
+          setGeoStatus("unavailable");
+          notify("Location timed out. Make sure you're outdoors or near a window and try again.", "error");
         } else {
           setGeoStatus("unavailable");
           notify("Could not get your location. Please try again.", "error");
         }
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
@@ -1874,16 +1876,34 @@ function ClockScreen({ user, geoStatus, geoDistance, GEOFENCE_RADIUS, getEmploye
     setCapturedPhoto(null);
     setCameraError(null);
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setCameraError("Camera not supported on this browser. Try Chrome or Safari.");
+        return;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 480 }, height: { ideal: 480 } }
+        video: { facingMode: "user", width: { ideal: 480 }, height: { ideal: 480 } },
+        audio: false
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
+        videoRef.current.setAttribute("playsinline", "true");
+        videoRef.current.setAttribute("webkit-playsinline", "true");
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play().catch(() => {});
+        };
       }
       setCameraActive(true);
     } catch (err) {
-      setCameraError("Camera access denied. Please allow camera permissions.");
+      console.error("Camera error:", err);
+      if (err.name === "NotAllowedError") {
+        setCameraError("Camera permission denied. On iPhone: Settings → Safari → Camera → Allow. On Android: tap the lock icon in address bar → Permissions → Camera → Allow. Then refresh.");
+      } else if (err.name === "NotFoundError") {
+        setCameraError("No camera found on this device.");
+      } else if (err.name === "NotReadableError") {
+        setCameraError("Camera is in use by another app. Close other apps and try again.");
+      } else {
+        setCameraError("Camera error: " + err.message);
+      }
       setCameraActive(false);
     }
   };
@@ -1963,8 +1983,8 @@ function ClockScreen({ user, geoStatus, geoDistance, GEOFENCE_RADIUS, getEmploye
         {/* Camera view */}
         {cameraActive && (
           <div style={{ marginBottom: 14 }}>
-            <div style={{ position: "relative", width: 200, height: 200, margin: "0 auto", borderRadius: 14, overflow: "hidden", border: "3px solid var(--accent)" }}>
-              <video ref={videoRef} autoPlay playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)" }} />
+            <div style={{ position: "relative", width: 200, height: 200, margin: "0 auto", borderRadius: 14, overflow: "hidden", border: "3px solid var(--accent)", background: "#000" }}>
+              <video ref={videoRef} autoPlay playsInline webkit-playsinline="true" muted style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)", background: "#000" }} />
             </div>
             <div style={{ fontSize: 11, color: "var(--ink2)", marginTop: 8, marginBottom: 10 }}>📸 Position your face in the frame</div>
             <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
