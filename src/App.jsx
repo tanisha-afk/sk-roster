@@ -1528,7 +1528,7 @@ function SKRosterInner() {
             <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Staff Shop</h2>
             <p style={{ color: "var(--ink2)", marginBottom: 14 }}>Purchase products below.</p>
             <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-              {isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ padding: "8px 14px", borderRadius: 7, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 500, color: "var(--ink2)" }}>Manage Products</button>}
+              {user?.isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ padding: "8px 14px", borderRadius: 7, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 500, color: "var(--ink2)" }}>Manage Products</button>}
               <button onClick={() => setModal({ type: "newPurchase" })} style={btnPrimary}>New Purchase</button>
             </div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>Purchases</div>
