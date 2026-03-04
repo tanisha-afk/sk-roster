@@ -319,6 +319,55 @@ function exportMYOBTimesheets(timelog, employees, dateFrom, dateTo) {
   return rows.length;
 }
 
+// ─── PURCHASE PAYROLL EXPORT ──────────────────────────────────────────
+function exportPurchasesCSV(purchases, filterType) {
+  const filtered = purchases.filter(function(p) {
+    if (p.status !== "approved") return false;
+    if (filterType === "payroll" && p.paymentMethod !== "payroll deduction") return false;
+    if (filterType === "cash" && p.paymentMethod !== "paid cash") return false;
+    return true;
+  });
+
+  if (filtered.length === 0) return null;
+
+  var headers = ["Employee", "Date", "Items", "Qty", "Total", "Payment Method", "Approved By"];
+
+  var rows = filtered.map(function(p) {
+    var itemsText = (p.items || []).map(function(i) { return i.qty + "x " + i.name; }).join("; ");
+    var totalQty = (p.items || []).reduce(function(s, i) { return s + i.qty; }, 0);
+    return [
+      p.employeeName || "",
+      p.submittedDate || "",
+      itemsText,
+      totalQty,
+      (p.total || 0).toFixed(2),
+      p.paymentMethod || "",
+      p.approvedBy || ""
+    ];
+  });
+
+  var csvContent = [
+    headers.join(","),
+    rows.map(function(r) {
+      return r.map(function(cell) {
+        return '"' + String(cell).replace(/"/g, '""') + '"';
+      }).join(",");
+    }).join("\n")
+  ].join("\n");
+
+  var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement("a");
+  link.href = url;
+  var today = fmtDate(new Date(), "iso");
+  link.download = "SK_Staff_Purchases_" + (filterType || "all") + "_" + today + ".csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  return filtered.length;
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 //  MAIN APP
 // ═══════════════════════════════════════════════════════════════════════
@@ -1525,12 +1574,17 @@ function SKRosterInner() {
         {/* ──── SHOP ──── */}
         {tab === "shop" && (
           <div className="fade-up">
-            <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Staff Shop</h2>
-            <p style={{ color: "var(--ink2)", marginBottom: 14 }}>Purchase products below.</p>
-            <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-              {user?.isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ padding: "8px 14px", borderRadius: 7, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 500, color: "var(--ink2)" }}>Manage Products</button>}
-              <button onClick={() => setModal({ type: "newPurchase" })} style={btnPrimary}>New Purchase</button>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Staff Shop</h2>
+              <button onClick={() => setModal({ type: "newPurchase" })} style={btnPrimary}><I.Plus /> New Purchase</button>
             </div>
+            {(isManager || isAccounts) && (
+              <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
+                {user?.isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit", fontSize: 11, fontWeight: 500, color: "var(--ink2)" }}>Manage Products</button>}
+                <button onClick={function() { var n = exportPurchasesCSV(purchases, "payroll"); if (n) { notify("Exported " + n + " payroll purchases"); } else { notify("No payroll purchases to export"); } }} style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit", fontSize: 11, fontWeight: 500, color: "var(--ink2)", display: "flex", alignItems: "center", gap: 4 }}><I.Download /> Export Payroll</button>
+                <button onClick={function() { var n = exportPurchasesCSV(purchases, "all"); if (n) { notify("Exported " + n + " purchases"); } else { notify("No purchases to export"); } }} style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit", fontSize: 11, fontWeight: 500, color: "var(--ink3)", display: "flex", alignItems: "center", gap: 4 }}><I.Download /> Export All</button>
+              </div>
+            )}
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>Purchases</div>
             {(!purchases || purchases.length === 0) ? (
               <div style={{ fontSize: 12, color: "var(--ink3)", padding: 20, textAlign: "center" }}>No purchases yet</div>
