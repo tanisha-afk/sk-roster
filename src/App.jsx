@@ -2054,7 +2054,7 @@ function PurchaseForm({ products, onSubmit, onCancel }) {
         {products.map(p => {
           const qty = cart[p.id] || 0;
           return (
-            <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, background: qty > 0 ? "var(--accent-bg)" : "var(--surface2)", border: `1px solid ${qty > 0 ? "var(--accent)" : "var(--border)"}22`, transition: "all .2s" }}>
+            <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, background: qty > 0 ? "var(--accent-bg)" : "var(--surface2)", border: qty > 0 ? "1px solid var(--accent)" : "1px solid var(--border)", transition: "all .2s" }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500 }}>{p.name}</div>
                 <div style={{ fontSize: 12, color: "var(--ink3)" }}>${p.price.toFixed(2)}</div>
