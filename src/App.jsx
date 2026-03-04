@@ -15,57 +15,68 @@ const DEFAULT_SHIFTS = {
 };
 
 const DEPARTMENTS = ["Production", "Accounts", "Sales"];
-const LEAVE_TYPES = ["Annual Leave", "Sick Leave", "Personal Leave", "Parental Leave", "Workers Comp", "Unpaid Leave"];
+const LEAVE_TYPES = ["Annual Leave", "Personal/Sick Leave", "Unpaid Leave"];
+
+const DEFAULT_PRODUCTS = [
+  { id: "prod-1", name: "Paneer", price: 10.10 },
+  { id: "prod-2", name: "Yoghurt 1kg", price: 2.95 },
+  { id: "prod-3", name: "Yoghurt 2kg", price: 5.25 },
+  { id: "prod-4", name: "Mango Lassi", price: 1.50 },
+  { id: "prod-5", name: "Milk Badam", price: 1.50 },
+  { id: "prod-6", name: "Kesar Milk", price: 1.50 },
+  { id: "prod-7", name: "Khajoor Milk", price: 1.50 },
+  { id: "prod-8", name: "Mango Shrikhand", price: 4.05 },
+  { id: "prod-9", name: "Kesar and Elaichi Shrikhand", price: 4.05 },
+];
 
 // ─── SEED DATA ──────────────────────────────────────────────────────
 const SEED_EMPLOYEES = [
   // Management / Salaried
-  { name: "Raj Krishna", role: "Accounts Manager", dept: "Accounts", rate: 64.90, pin: "4104", leaveInit: { annual: 35.1, sick: 19.1, personal: 0 }, empType: "full-time" },
-  { name: "Gopi Dhamija", role: "Production Supervisor", dept: "Production", rate: 40.87, pin: "8160", leaveInit: { annual: 29.1, sick: 13.4, personal: 0 }, empType: "full-time" },
-  { name: "Prateek Kumar", role: "Production Supervisor", dept: "Production", rate: 37.30, pin: "1681", leaveInit: { annual: 7.1, sick: 6.5, personal: 0 }, empType: "full-time" },
-  { name: "Prabhkeerat Singh", role: "Sales Representative", dept: "Sales", rate: 32.96, pin: "1547", leaveInit: { annual: 20.3, sick: 18.9, personal: 0 }, empType: "full-time" },
-  { name: "Mohit Sivia", role: "Sales Representative", dept: "Sales", rate: 48.08, pin: "9738", leaveInit: { annual: 10.6, sick: 10.8, personal: 0 }, empType: "full-time" },
+  { name: "Raj Krishna", role: "Accounts Manager", dept: "Accounts", rate: 64.90, pin: "4104", leaveInit: { annual: 35.1, personal: 19.1 }, empType: "full-time" },
+  { name: "Gopi Dhamija", role: "Production Supervisor", dept: "Production", rate: 40.87, pin: "8160", leaveInit: { annual: 29.1, personal: 13.4 }, empType: "full-time" },
+  { name: "Prateek Kumar", role: "Production Supervisor", dept: "Production", rate: 37.30, pin: "1681", leaveInit: { annual: 7.1, personal: 6.5 }, empType: "full-time" },
+  { name: "Prabhkeerat Singh", role: "Sales Representative", dept: "Sales", rate: 32.96, pin: "1547", leaveInit: { annual: 20.3, personal: 18.9 }, empType: "full-time" },
+  { name: "Mohit Sivia", role: "Sales Representative", dept: "Sales", rate: 48.08, pin: "9738", leaveInit: { annual: 10.6, personal: 10.8 }, empType: "full-time" },
   // Process Workers
-  { name: "Bushar Ahmed", role: "Process Worker", dept: "Production", rate: 29.50, pin: "1943", leaveInit: { annual: 14.0, sick: 1.0, personal: 0 }, empType: "full-time" },
-  { name: "Sandesh Adhikari", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3819", leaveInit: { annual: 9.1, sick: 1.5, personal: 0 }, empType: "full-time" },
-  { name: "Anannya Rehman Amiya", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5693", leaveInit: { annual: 0.2, sick: 0.1, personal: 0 }, empType: "full-time" },
-  { name: "Majid Ali", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9529", leaveInit: { annual: 7.6, sick: 1.7, personal: 0 }, empType: "full-time" },
-  { name: "Tikaram Badari Sharma", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1380", leaveInit: { annual: 5.3, sick: 3.9, personal: 0 }, empType: "part-time" },
-  { name: "Kumaramanjunath Baleattiguppe Sadashivappa", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1797", leaveInit: { annual: 7.5, sick: 4.0, personal: 0 }, empType: "full-time" },
-  { name: "Razia Bibi", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5316", leaveInit: { annual: 14.9, sick: 10.1, personal: 0 }, empType: "full-time" },
-  { name: "Marites Cabaltera", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9821", leaveInit: { annual: 10.0, sick: 20.5, personal: 0 }, empType: "full-time" },
-  { name: "Chetna Chetna", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6999", leaveInit: { annual: 12.0, sick: 3.8, personal: 0 }, empType: "full-time" },
-  { name: "Anita Dangi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "1354", leaveInit: { annual: 3.8, sick: 4.5, personal: 0 }, empType: "full-time" },
-  { name: "Eldefer Dequino", role: "Process Worker", dept: "Production", rate: 34.00, pin: "3608", leaveInit: { annual: 10.8, sick: 16.5, personal: 0 }, empType: "full-time" },
-  { name: "Tanjilalam Emon", role: "Process Worker", dept: "Production", rate: 32.00, pin: "3204", leaveInit: { annual: 6.4, sick: 1.3, personal: 0 }, empType: "full-time" },
-  { name: "Louie Fortes", role: "Process Worker", dept: "Production", rate: 31.50, pin: "8533", leaveInit: { annual: 4.3, sick: 36.5, personal: 0 }, empType: "full-time" },
-  { name: "Jahid Hasan", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1818", leaveInit: { annual: 1.7, sick: 0.1, personal: 0 }, empType: "full-time" },
-  { name: "Mdkamrul Hasan", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3996", leaveInit: { annual: 9.7, sick: 0.2, personal: 0 }, empType: "full-time" },
-  { name: "Nimra Habib", role: "Process Worker", dept: "Production", rate: 26.00, pin: "8823", leaveInit: { annual: 0.8, sick: 0.4, personal: 0 }, empType: "full-time" },
-  { name: "Navneet Kaur Virk", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5250", leaveInit: { annual: 2.4, sick: 1.2, personal: 0 }, empType: "full-time" },
-  { name: "Sabnam Khadka", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1284", leaveInit: { annual: 0.5, sick: 0.1, personal: 0 }, empType: "part-time" },
-  { name: "Ashwani Kumar Kumar", role: "Process Worker", dept: "Production", rate: 26.00, pin: "2855", leaveInit: { annual: 12.5, sick: 3.8, personal: 0 }, empType: "full-time" },
-  { name: "Sang Kyung Lee", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5863", leaveInit: { annual: 10.6, sick: 0.6, personal: 0 }, empType: "full-time" },
-  { name: "Manoj Manjunath", role: "Process Worker", dept: "Production", rate: 33.00, pin: "1309", leaveInit: { annual: 31.0, sick: 15.5, personal: 0 }, empType: "full-time" },
-  { name: "Kundan Neupane", role: "Process Worker", dept: "Production", rate: 28.00, pin: "8233", leaveInit: { annual: 5.9, sick: 1.9, personal: 0 }, empType: "full-time" },
-  { name: "Sargam Nasrullah", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6406", leaveInit: { annual: 1.3, sick: 0.6, personal: 0 }, empType: "full-time" },
-  { name: "Bora Ozcelik", role: "Process Worker", dept: "Production", rate: 28.50, pin: "4952", leaveInit: { annual: 9.1, sick: 0.2, personal: 0 }, empType: "full-time" },
-  { name: "Sreejan Kumar Paul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6970", leaveInit: { annual: 8.5, sick: 4.6, personal: 0 }, empType: "full-time" },
-  { name: "Amisha Pun", role: "Process Worker", dept: "Production", rate: 29.00, pin: "5165", leaveInit: { annual: 6.2, sick: 4.5, personal: 0 }, empType: "full-time" },
-  { name: "Miskur Rumi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "2602", leaveInit: { annual: 6.7, sick: 8.3, personal: 0 }, empType: "full-time" },
-  { name: "Yatin Sethi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "9273", leaveInit: { annual: 13.0, sick: 2.3, personal: 0 }, empType: "full-time" },
-  { name: "Vijay Sharma", role: "Process Worker", dept: "Production", rate: 31.50, pin: "3271", leaveInit: { annual: 37.4, sick: 3.5, personal: 0 }, empType: "full-time" },
-  { name: "Nidhi Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "2501", leaveInit: { annual: 7.4, sick: 0.8, personal: 0 }, empType: "full-time" },
-  { name: "Harshit Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3823", leaveInit: { annual: 0.4, sick: 0.2, personal: 0 }, empType: "full-time" },
-  { name: "Karthik Shelvaraju", role: "Process Worker", dept: "Production", rate: 28.00, pin: "4934", leaveInit: { annual: 6.9, sick: 1.3, personal: 0 }, empType: "full-time" },
-  { name: "Abhay Singh", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5292", leaveInit: { annual: 5.4, sick: 2.4, personal: 0 }, empType: "full-time" },
-  { name: "Ragwinder Singh", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9140", leaveInit: { annual: 27.5, sick: 1.2, personal: 0 }, empType: "full-time" },
-  { name: "Devkaran Singh", role: "Process Worker", dept: "Production", rate: 29.00, pin: "1819", leaveInit: { annual: 3.3, sick: 0.7, personal: 0 }, empType: "full-time" },
-  { name: "Rohan Sood", role: "Process Worker", dept: "Production", rate: 26.00, pin: "7269", leaveInit: { annual: 8.9, sick: 1.8, personal: 0 }, empType: "full-time" },
-  { name: "Samundra Tuladhar", role: "Process Worker", dept: "Production", rate: 34.00, pin: "4325", leaveInit: { annual: 27.8, sick: 7.8, personal: 0 }, empType: "full-time" },
-  { name: "Yash Yash", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9236", leaveInit: { annual: 2.0, sick: 3.1, personal: 0 }, empType: "full-time" },
+  { name: "Bushar Ahmed", role: "Process Worker", dept: "Production", rate: 29.50, pin: "1943", leaveInit: { annual: 14.0, personal: 1.0 }, empType: "full-time" },
+  { name: "Sandesh Adhikari", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3819", leaveInit: { annual: 9.1, personal: 1.5 }, empType: "full-time" },
+  { name: "Anannya Rehman Amiya", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5693", leaveInit: { annual: 0.2, personal: 0.1 }, empType: "full-time" },
+  { name: "Majid Ali", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9529", leaveInit: { annual: 7.6, personal: 1.7 }, empType: "full-time" },
+  { name: "Tikaram Badari Sharma", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1380", leaveInit: { annual: 5.3, personal: 3.9 }, empType: "part-time" },
+  { name: "Kumaramanjunath Baleattiguppe Sadashivappa", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1797", leaveInit: { annual: 7.5, personal: 4.0 }, empType: "full-time" },
+  { name: "Razia Bibi", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5316", leaveInit: { annual: 14.9, personal: 10.1 }, empType: "full-time" },
+  { name: "Marites Cabaltera", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9821", leaveInit: { annual: 10.0, personal: 20.5 }, empType: "full-time" },
+  { name: "Chetna Chetna", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6999", leaveInit: { annual: 12.0, personal: 3.8 }, empType: "full-time" },
+  { name: "Anita Dangi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "1354", leaveInit: { annual: 3.8, personal: 4.5 }, empType: "full-time" },
+  { name: "Eldefer Dequino", role: "Process Worker", dept: "Production", rate: 34.00, pin: "3608", leaveInit: { annual: 10.8, personal: 16.5 }, empType: "full-time" },
+  { name: "Tanjilalam Emon", role: "Process Worker", dept: "Production", rate: 32.00, pin: "3204", leaveInit: { annual: 6.4, personal: 1.3 }, empType: "full-time" },
+  { name: "Louie Fortes", role: "Process Worker", dept: "Production", rate: 31.50, pin: "8533", leaveInit: { annual: 4.3, personal: 36.5 }, empType: "full-time" },
+  { name: "Jahid Hasan", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1818", leaveInit: { annual: 1.7, personal: 0.1 }, empType: "full-time" },
+  { name: "Mdkamrul Hasan", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3996", leaveInit: { annual: 9.7, personal: 0.2 }, empType: "full-time" },
+  { name: "Nimra Habib", role: "Process Worker", dept: "Production", rate: 26.00, pin: "8823", leaveInit: { annual: 0.8, personal: 0.4 }, empType: "full-time" },
+  { name: "Navneet Kaur Virk", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5250", leaveInit: { annual: 2.4, personal: 1.2 }, empType: "full-time" },
+  { name: "Sabnam Khadka", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1284", leaveInit: { annual: 0.5, personal: 0.1 }, empType: "part-time" },
+  { name: "Ashwani Kumar Kumar", role: "Process Worker", dept: "Production", rate: 26.00, pin: "2855", leaveInit: { annual: 12.5, personal: 3.8 }, empType: "full-time" },
+  { name: "Sang Kyung Lee", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5863", leaveInit: { annual: 10.6, personal: 0.6 }, empType: "full-time" },
+  { name: "Manoj Manjunath", role: "Process Worker", dept: "Production", rate: 33.00, pin: "1309", leaveInit: { annual: 31.0, personal: 15.5 }, empType: "full-time" },
+  { name: "Kundan Neupane", role: "Process Worker", dept: "Production", rate: 28.00, pin: "8233", leaveInit: { annual: 5.9, personal: 1.9 }, empType: "full-time" },
+  { name: "Sargam Nasrullah", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6406", leaveInit: { annual: 1.3, personal: 0.6 }, empType: "full-time" },
+  { name: "Bora Ozcelik", role: "Process Worker", dept: "Production", rate: 28.50, pin: "4952", leaveInit: { annual: 9.1, personal: 0.2 }, empType: "full-time" },
+  { name: "Sreejan Kumar Paul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6970", leaveInit: { annual: 8.5, personal: 4.6 }, empType: "full-time" },
+  { name: "Amisha Pun", role: "Process Worker", dept: "Production", rate: 29.00, pin: "5165", leaveInit: { annual: 6.2, personal: 4.5 }, empType: "full-time" },
+  { name: "Miskur Rumi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "2602", leaveInit: { annual: 6.7, personal: 8.3 }, empType: "full-time" },
+  { name: "Yatin Sethi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "9273", leaveInit: { annual: 13.0, personal: 2.3 }, empType: "full-time" },
+  { name: "Vijay Sharma", role: "Process Worker", dept: "Production", rate: 31.50, pin: "3271", leaveInit: { annual: 37.4, personal: 3.5 }, empType: "full-time" },
+  { name: "Nidhi Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "2501", leaveInit: { annual: 7.4, personal: 0.8 }, empType: "full-time" },
+  { name: "Harshit Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3823", leaveInit: { annual: 0.4, personal: 0.2 }, empType: "full-time" },
+  { name: "Karthik Shelvaraju", role: "Process Worker", dept: "Production", rate: 28.00, pin: "4934", leaveInit: { annual: 6.9, personal: 1.3 }, empType: "full-time" },
+  { name: "Abhay Singh", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5292", leaveInit: { annual: 5.4, personal: 2.4 }, empType: "full-time" },
+  { name: "Ragwinder Singh", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9140", leaveInit: { annual: 27.5, personal: 1.2 }, empType: "full-time" },
+  { name: "Rohan Sood", role: "Process Worker", dept: "Production", rate: 26.00, pin: "7269", leaveInit: { annual: 8.9, personal: 1.8 }, empType: "full-time" },
+  { name: "Samundra Tuladhar", role: "Process Worker", dept: "Production", rate: 34.00, pin: "4325", leaveInit: { annual: 27.8, personal: 7.8 }, empType: "full-time" },
+  { name: "Yash Yash", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9236", leaveInit: { annual: 2.0, personal: 3.1 }, empType: "full-time" },
   // Owner
-  { name: "Tanisha Sharma", role: "Owner", dept: "Production", rate: 0, pin: "cherry2077", leaveInit: { annual: 50.4, sick: 25.2, personal: 0 }, empType: "full-time" },
+  { name: "Tanisha Sharma", role: "Owner", dept: "Production", rate: 0, pin: "cherry2077", leaveInit: { annual: 50.4, personal: 25.2 }, empType: "full-time" },
 ];
 
 function generateUniquePin(usedPins) {
@@ -91,7 +102,7 @@ function buildEmployees() {
       clockedIn: false,
       clockInTime: null,
       hourlyRate: e.rate,
-      leaveBalance: e.leaveInit || { annual: 20, sick: 10, personal: 3 },
+      leaveBalance: e.leaveInit || { annual: 20, personal: 10 },
       employmentType: e.empType || "full-time",
       daysPerWeek: e.empType === "part-time" ? (e.daysPerWeek || 3) : 5,
     };
@@ -134,6 +145,8 @@ const STORE_KEYS = {
   timelog: "timelog",
   shifts: "shifts",
   notifications: "notifications",
+  products: "products",
+  purchases: "purchases",
 };
 
 async function load(key) {
@@ -162,6 +175,7 @@ const I = {
   Download: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
   Home: (p) => <svg {...p} width={p?.size||18} height={p?.size||18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
   Bell: (p) => <svg {...p} width={p?.size||18} height={p?.size||18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>,
+  ShoppingBag: (p) => <svg {...p} width={p?.size||18} height={p?.size||18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>,
 };
 
 // ─── STYLES ──────────────────────────────────────────────────────────
@@ -293,6 +307,8 @@ export default function SKRoster() {
   const [timelog, setTimelog] = useState([]);
   const [SHIFTS, setSHIFTS] = useState(DEFAULT_SHIFTS);
   const [notifications, setNotifications] = useState([]);
+  const [products, setProducts] = useState(DEFAULT_PRODUCTS);
+  const [purchases, setPurchases] = useState([]);
   const [showNotifs, setShowNotifs] = useState(false);
   const [tab, setTab] = useState("dashboard");
   const [weekStart, setWeekStart] = useState(getWeekStart(new Date()));
@@ -314,6 +330,8 @@ export default function SKRoster() {
       const t = (await load(STORE_KEYS.timelog)) || [];
       const sh = (await load(STORE_KEYS.shifts)) || DEFAULT_SHIFTS;
       const n = (await load(STORE_KEYS.notifications)) || [];
+      const pr = (await load(STORE_KEYS.products)) || DEFAULT_PRODUCTS;
+      const pu = (await load(STORE_KEYS.purchases)) || [];
       setEmployees(emps);
       setRoster(r);
       setLeaves(l);
@@ -321,6 +339,8 @@ export default function SKRoster() {
       setTimelog(t);
       setSHIFTS(sh);
       setNotifications(n);
+      setProducts(pr);
+      setPurchases(pu);
       setReady(true);
     })();
   }, []);
@@ -336,6 +356,8 @@ export default function SKRoster() {
       fbListen(STORE_KEYS.timelog, (data) => { if (data) setTimelog(data); }),
       fbListen(STORE_KEYS.shifts, (data) => { if (data) setSHIFTS(data); }),
       fbListen(STORE_KEYS.notifications, (data) => { if (data) setNotifications(data); }),
+      fbListen(STORE_KEYS.products, (data) => { if (data) setProducts(data); }),
+      fbListen(STORE_KEYS.purchases, (data) => { if (data) setPurchases(data); }),
     ];
     return () => unsubs.forEach(u => u());
   }, [ready]);
@@ -373,8 +395,8 @@ export default function SKRoster() {
       const lastAccrual = await load(accrualKey);
       if (lastAccrual === monthKey) return; // already accrued this month
 
-      // Full-time monthly rates
-      const FT_ANNUAL = 1.67, FT_SICK = 0.83, FT_PERSONAL = 0.25;
+      // Full-time monthly rates (personal/sick combined as per NES)
+      const FT_ANNUAL = 1.67, FT_PERSONAL = 0.83;
 
       const updated = employees.map(emp => {
         const type = emp.employmentType || "full-time";
@@ -385,8 +407,7 @@ export default function SKRoster() {
           ...emp,
           leaveBalance: {
             annual: Math.round((emp.leaveBalance.annual + FT_ANNUAL * ratio) * 100) / 100,
-            sick: Math.round((emp.leaveBalance.sick + FT_SICK * ratio) * 100) / 100,
-            personal: Math.round((emp.leaveBalance.personal + FT_PERSONAL * ratio) * 100) / 100,
+            personal: Math.round(((emp.leaveBalance.personal || 0) + FT_PERSONAL * ratio) * 100) / 100,
           }
         };
       });
@@ -478,6 +499,41 @@ export default function SKRoster() {
     await persist(STORE_KEYS.swaps, nextSwaps);
     notify(`Swap ${status}`);
     if (sw) sendNotification([sw.requesterId], `Your shift swap for ${sw.date} has been ${status}`, "swap");
+  };
+
+  // ─── PURCHASE ACTIONS ─────────────────────────────────────────────
+  const submitPurchase = async (data) => {
+    const next = [...purchases, {
+      ...data,
+      id: `pur-${Date.now()}`,
+      status: "pending",
+      submittedDate: fmtDate(new Date(), "iso"),
+      submittedTime: new Date().toLocaleTimeString("en-AU", { hour: "2-digit", minute: "2-digit" }),
+      employeeId: user.id,
+      employeeName: user.name,
+      department: user.dept,
+      paymentMethod: null,
+    }];
+    setPurchases(next);
+    await persist(STORE_KEYS.purchases, next);
+    setModal(null);
+    notify("Purchase request submitted");
+    sendNotification("managers", `${user.name} submitted a purchase request ($${data.total.toFixed(2)})`, "purchase");
+  };
+
+  const handlePurchase = async (id, status, paymentMethod) => {
+    const nextPurchases = purchases.map(p => p.id === id ? { ...p, status, paymentMethod: paymentMethod || null, approvedBy: user.name, approvedDate: fmtDate(new Date(), "iso") } : p);
+    setPurchases(nextPurchases);
+    await persist(STORE_KEYS.purchases, nextPurchases);
+    notify(`Purchase ${status}`);
+    const pur = purchases.find(p => p.id === id);
+    if (pur) sendNotification([pur.employeeId], `Your purchase request ($${pur.total.toFixed(2)}) has been ${status}${paymentMethod ? ` — ${paymentMethod}` : ""}`, "purchase");
+  };
+
+  const saveProducts = async (newProducts) => {
+    setProducts(newProducts);
+    await persist(STORE_KEYS.products, newProducts);
+    notify("Products updated");
   };
 
   // ─── GEOLOCATION CONFIG ─────────────────────────────────────────────
@@ -610,7 +666,7 @@ export default function SKRoster() {
       startDate: data.startDate || null,
       phone: data.phone || null,
       email: data.email || null,
-      leaveBalance: { annual: 20, sick: 10, personal: 3 },
+      leaveBalance: { annual: 0, personal: 0 },
     };
     const nextEmps = [...employees, newEmp];
     setEmployees(nextEmps);
@@ -667,6 +723,7 @@ export default function SKRoster() {
     { id: "timesheets", label: "Timesheets", icon: I.Clock },
     { id: "leave", label: "Leave", icon: I.FileText },
     { id: "swaps", label: "Swaps", icon: I.Swap },
+    { id: "shop", label: "Shop", icon: I.ShoppingBag },
     { id: "people", label: "People", icon: I.Users },
   ];
   const accountsTabs = [
@@ -675,6 +732,7 @@ export default function SKRoster() {
     { id: "timesheets", label: "Timesheets", icon: I.Clock },
     { id: "clock", label: "Clock In/Out", icon: I.Clock },
     { id: "leave", label: "Leave", icon: I.FileText },
+    { id: "shop", label: "Shop", icon: I.ShoppingBag },
     { id: "people", label: "People", icon: I.Users },
   ];
   const empTabs = [
@@ -683,6 +741,7 @@ export default function SKRoster() {
     { id: "clock", label: "Clock In/Out", icon: I.Clock },
     { id: "leave", label: "Leave", icon: I.FileText },
     { id: "swaps", label: "Swap Shift", icon: I.Swap },
+    { id: "shop", label: "Shop", icon: I.ShoppingBag },
   ];
   const currentTabs = isManager ? managerTabs : isAccounts ? accountsTabs : empTabs;
 
@@ -855,6 +914,7 @@ export default function SKRoster() {
                 {(() => {
                   const pendingLeaves = leaves.filter(l => l.status === "pending");
                   const pendingSwaps = swaps.filter(s => s.status === "pending");
+                  const pendingPurchases = purchases.filter(p => p.status === "pending");
                   return (
                     <>
                       <div style={{ display: "flex", gap: 16, marginBottom: 10 }}>
@@ -866,9 +926,14 @@ export default function SKRoster() {
                           <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Fraunces', serif", color: pendingSwaps.length > 0 ? "#D97706" : "var(--ink3)" }}>{pendingSwaps.length}</div>
                           <div style={{ fontSize: 10, color: "var(--ink3)" }}>Swaps</div>
                         </div>
+                        <div style={{ textAlign: "center" }}>
+                          <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Fraunces', serif", color: pendingPurchases.length > 0 ? "#7C3AED" : "var(--ink3)" }}>{pendingPurchases.length}</div>
+                          <div style={{ fontSize: 10, color: "var(--ink3)" }}>Purchases</div>
+                        </div>
                       </div>
                       {pendingLeaves.length > 0 && <button onClick={() => setTab("leave")} style={{ fontSize: 11, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "5px 12px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500 }}>Review Leave →</button>}
                       {pendingSwaps.length > 0 && <button onClick={() => setTab("swaps")} style={{ fontSize: 11, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "5px 12px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginLeft: 6 }}>Review Swaps →</button>}
+                      {pendingPurchases.length > 0 && <button onClick={() => setTab("shop")} style={{ fontSize: 11, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "5px 12px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginLeft: 6 }}>Review Purchases →</button>}
                     </>
                   );
                 })()}
@@ -1047,7 +1112,36 @@ export default function SKRoster() {
                   </select>
                 )}
                 {isManager && !canSeeAllDepts && <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink2)" }}>Production</span>}
-                {isManager && <button onClick={() => window.print()} style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontSize: 11, fontFamily: "inherit", color: "var(--ink2)" }}><I.Download /> PDF</button>}
+                {isManager && <button onClick={() => {
+                  // Build a clean HTML table for printing
+                  const weekLabel = `${fmtDate(days[0])} – ${fmtDate(days[6])}`;
+                  const dayHeaders = days.map(d => `<th style="padding:6px 4px;text-align:center;font-size:11px;border:1px solid #ddd;background:#f5f5f0">${fmtDate(d, "day")}<br/>${fmtDate(d, "num")}</th>`).join("");
+                  const rows = [...filtered].sort((a, b) => {
+                    const todayIso = fmtDate(new Date(), "iso");
+                    const shiftA = getShift(a.id, todayIso);
+                    const shiftB = getShift(b.id, todayIso);
+                    const shiftKeys = Object.keys(SHIFTS);
+                    const idxA = shiftA ? shiftKeys.indexOf(shiftA) : 999;
+                    const idxB = shiftB ? shiftKeys.indexOf(shiftB) : 999;
+                    if (idxA !== idxB) return idxA - idxB;
+                    return a.name.localeCompare(b.name);
+                  }).map(emp => {
+                    const cells = days.map(d => {
+                      const iso = fmtDate(d, "iso");
+                      const shift = getShift(emp.id, iso);
+                      const onLeave = leaves.some(l => l.status === "approved" && l.employeeId === emp.id && iso >= l.startDate && iso <= l.endDate);
+                      if (onLeave) return `<td style="padding:4px;text-align:center;font-size:10px;border:1px solid #ddd;background:#FEE2E2;color:#DC2626;font-weight:600">Leave</td>`;
+                      if (shift && SHIFTS[shift]) return `<td style="padding:4px;text-align:center;font-size:10px;border:1px solid #ddd;background:${SHIFTS[shift].bg};color:${SHIFTS[shift].color};font-weight:600">${SHIFTS[shift].label}<br/><span style="font-weight:400;font-size:9px">${SHIFTS[shift].time.split("–")[0].trim()}</span></td>`;
+                      return `<td style="padding:4px;text-align:center;border:1px solid #ddd;color:#ccc;font-size:10px">—</td>`;
+                    }).join("");
+                    return `<tr><td style="padding:6px 10px;font-size:11px;font-weight:500;border:1px solid #ddd;white-space:nowrap">${emp.name}</td>${cells}</tr>`;
+                  }).join("");
+                  const html = `<!DOCTYPE html><html><head><title>Roster ${weekLabel}</title><style>body{font-family:Arial,sans-serif;padding:20px}table{border-collapse:collapse;width:100%}@media print{body{padding:10px}}</style></head><body><h2 style="margin:0 0 4px;font-size:16px">Sharma's Kitchen — Weekly Roster</h2><p style="margin:0 0 14px;color:#666;font-size:13px">${weekLabel}</p><table><thead><tr><th style="padding:6px 10px;text-align:left;font-size:11px;border:1px solid #ddd;background:#f5f5f0">Employee</th>${dayHeaders}</tr></thead><tbody>${rows}</tbody></table><p style="margin-top:16px;font-size:10px;color:#999">Printed ${new Date().toLocaleString("en-AU")}</p></body></html>`;
+                  const w = window.open("", "_blank");
+                  w.document.write(html);
+                  w.document.close();
+                  setTimeout(() => { w.print(); }, 500);
+                }} style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontSize: 11, fontFamily: "inherit", color: "var(--ink2)" }}><I.Download /> PDF</button>}
               </div>
             </div>
             {/* Shift Legend */}
@@ -1291,7 +1385,7 @@ export default function SKRoster() {
             {/* My leave balance (employee) */}
             {!isManager && (
               <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-                {[{ label: "Annual", val: user.leaveBalance.annual, color: "var(--accent)" }, { label: "Sick", val: user.leaveBalance.sick, color: "var(--blue)" }, { label: "Personal", val: user.leaveBalance.personal, color: "#7E22CE" }].map(b => (
+                {[{ label: "Annual", val: user.leaveBalance.annual, color: "var(--accent)" }, { label: "Personal/Sick", val: user.leaveBalance.personal || 0, color: "var(--blue)" }].map(b => (
                   <div key={b.label} style={{ flex: 1, background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: 14, textAlign: "center" }}>
                     <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Fraunces', serif", color: b.color }}>{b.val}</div>
                     <div style={{ fontSize: 11, color: "var(--ink2)" }}>{b.label} days</div>
@@ -1390,8 +1484,7 @@ export default function SKRoster() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                     <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
                       <span style={tagSt("var(--accent)")}>AL: {emp.leaveBalance.annual}d</span>
-                      <span style={tagSt("var(--blue)")}>SL: {emp.leaveBalance.sick}d</span>
-                      <span style={tagSt("#7E22CE")}>PL: {emp.leaveBalance.personal}d</span>
+                      <span style={tagSt("var(--blue)")}>PL: {emp.leaveBalance.personal || 0}d</span>
                       <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 3, background: emp.employmentType === "casual" ? "rgba(107,107,107,.1)" : emp.employmentType === "part-time" ? "rgba(14,165,233,.1)" : "rgba(34,197,94,.1)", color: emp.employmentType === "casual" ? "#6B6B6B" : emp.employmentType === "part-time" ? "#0EA5E9" : "#22C55E", fontWeight: 600 }}>{emp.employmentType === "full-time" ? "FT" : emp.employmentType === "part-time" ? `PT ${emp.daysPerWeek || 3}d/wk` : "CAS"}</span>
                     </div>
                     {(user?.isOwner || user?.isAccounts) && <span style={{ fontSize: 12, fontWeight: 600, color: "var(--ink2)" }}>${emp.hourlyRate}/hr</span>}
@@ -1401,6 +1494,77 @@ export default function SKRoster() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ──── SHOP ──── */}
+        {tab === "shop" && (
+          <div className="fade-up">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>{(isManager || isAccounts) ? "Staff Purchases" : "Staff Shop"}</h2>
+              <div style={{ display: "flex", gap: 8 }}>
+                {isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ ...btnPrimary, background: "var(--surface)", color: "var(--ink)", border: "1px solid var(--border)" }}><I.FileText size={14} /> Manage Products</button>}
+                <button onClick={() => setModal({ type: "newPurchase" })} style={btnPrimary}><I.Plus /> New Purchase</button>
+              </div>
+            </div>
+
+            {/* Pending purchases (managers/accounts/owner) */}
+            {(isManager || isAccounts) && (() => {
+              const pending = purchases.filter(p => p.status === "pending");
+              return pending.length > 0 ? (
+                <>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>Pending Approval ({pending.length})</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                    {pending.map(p => (
+                      <div key={p.id} style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "14px 18px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: 14 }}>{p.employeeName}</div>
+                            <div style={{ fontSize: 11, color: "var(--ink3)" }}>{p.submittedDate} at {p.submittedTime}</div>
+                          </div>
+                          <div style={{ fontWeight: 700, fontSize: 16, color: "var(--accent)", fontFamily: "'Fraunces', serif" }}>${p.total.toFixed(2)}</div>
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
+                          {p.items.map((item, i) => (
+                            <span key={i} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, background: "var(--surface2)", border: "1px solid var(--border)" }}>{item.qty}× {item.name}</span>
+                          ))}
+                        </div>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button onClick={() => handlePurchase(p.id, "approved", "payroll deduction")} style={{ flex: 1, padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(21,128,61,.08)", color: "#15803D", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Approve — Payroll</button>
+                          <button onClick={() => handlePurchase(p.id, "approved", "paid cash")} style={{ flex: 1, padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(14,165,233,.08)", color: "#0EA5E9", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Approve — Cash</button>
+                          <button onClick={() => handlePurchase(p.id, "declined")} style={{ padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(220,38,38,.08)", color: "#DC2626", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Decline</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : null;
+            })()}
+
+            {/* Purchase history */}
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>
+              {(isManager || isAccounts) ? "All Purchases" : "My Purchases"}
+            </div>
+            {(() => {
+              const list = (isManager || isAccounts) ? purchases.filter(p => p.status !== "pending") : purchases.filter(p => p.employeeId === user.id);
+              return list.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {list.sort((a, b) => b.id.localeCompare(a.id)).map(p => (
+                    <div key={p.id} style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <div style={{ fontWeight: 500, fontSize: 13 }}>{(isManager || isAccounts) ? p.employeeName : p.items.map(i => `${i.qty}× ${i.name}`).join(", ")}</div>
+                        {(isManager || isAccounts) && <div style={{ fontSize: 11, color: "var(--ink3)" }}>{p.items.map(i => `${i.qty}× ${i.name}`).join(", ")}</div>}
+                        <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 2 }}>{p.submittedDate}{p.paymentMethod ? ` — ${p.paymentMethod}` : ""}</div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontWeight: 600, fontSize: 14 }}>${p.total.toFixed(2)}</span>
+                        <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, fontWeight: 600, background: p.status === "approved" ? "rgba(21,128,61,.08)" : p.status === "declined" ? "rgba(220,38,38,.08)" : "rgba(217,119,6,.08)", color: p.status === "approved" ? "#15803D" : p.status === "declined" ? "#DC2626" : "#D97706" }}>{p.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : <div style={{ fontSize: 12, color: "var(--ink3)", padding: 20, textAlign: "center" }}>No purchases yet</div>;
+            })()}
           </div>
         )}
       </main>
@@ -1463,6 +1627,13 @@ export default function SKRoster() {
               setSHIFTS(newShifts);
               persist(STORE_KEYS.shifts, newShifts);
               notify("Shift types updated");
+              setModal(null);
+            }} onCancel={() => setModal(null)} />}
+
+            {modal.type === "newPurchase" && <PurchaseForm products={products} onSubmit={submitPurchase} onCancel={() => setModal(null)} />}
+
+            {modal.type === "manageProducts" && <ManageProductsForm products={products} onSave={(newProducts) => {
+              saveProducts(newProducts);
               setModal(null);
             }} onCancel={() => setModal(null)} />}
 
@@ -1582,7 +1753,7 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
   const [reason, setReason] = useState("");
 
   // Date restrictions based on leave type
-  const isSick = type === "Sick Leave";
+  const isSick = type === "Personal/Sick Leave";
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
 
@@ -1592,7 +1763,7 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
     minStart = todayStr;
     maxStart = undefined;
     dateHint = null;
-  } else if (type === "Workers Comp" || type === "Unpaid Leave" || type === "Parental Leave") {
+  } else if (type === "Unpaid Leave") {
     minStart = todayStr;
     maxStart = undefined;
     dateHint = null;
@@ -1621,7 +1792,7 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
 
   // Check if annual/personal leave dates violate 14-day rule
   const isDateTooSoon = (() => {
-    if (isSick || type === "Workers Comp" || type === "Unpaid Leave" || type === "Parental Leave") return false;
+    if (isSick || type === "Unpaid Leave") return false;
     if (!startDate) return false;
     const twoWeeks = new Date(today);
     twoWeeks.setDate(twoWeeks.getDate() + 14);
@@ -1665,8 +1836,7 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
 // ═════════════════════════════════════════════════════════════════════
 function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
   const [annual, setAnnual] = useState(emp.leaveBalance.annual);
-  const [sick, setSick] = useState(emp.leaveBalance.sick);
-  const [personal, setPersonal] = useState(emp.leaveBalance.personal);
+  const [personal, setPersonal] = useState(emp.leaveBalance.personal || 0);
   const [employmentType, setEmploymentType] = useState(emp.employmentType || "full-time");
   const [daysPerWeek, setDaysPerWeek] = useState(emp.daysPerWeek || 5);
 
@@ -1680,7 +1850,7 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
         <div>
           <label style={labelSt}>Employment Type</label>
           <select value={employmentType} onChange={e => setEmploymentType(e.target.value)} style={{ ...numInput, textAlign: "left" }}>
-            <option value="full-time">Full-time (accrues 1.67 AL / 0.83 SL / 0.25 PL per month)</option>
+            <option value="full-time">Full-time (accrues 1.67 AL / 0.83 PL per month)</option>
             <option value="part-time">Part-time (pro-rata accrual based on days per week)</option>
             <option value="casual">Casual (no leave accrual)</option>
           </select>
@@ -1701,17 +1871,13 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
         )}
         <div>
           <label style={labelSt}>Annual Leave (days)</label>
-          <input type="number" min={0} max={99} step={0.01} value={annual} onChange={e => setAnnual(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
+          <input type="number" min={0} max={999} step={0.01} value={annual} onChange={e => setAnnual(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
         </div>
         <div>
-          <label style={labelSt}>Sick Leave (days)</label>
-          <input type="number" min={0} max={99} step={0.01} value={sick} onChange={e => setSick(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
+          <label style={labelSt}>Personal/Sick Leave (days)</label>
+          <input type="number" min={0} max={999} step={0.01} value={personal} onChange={e => setPersonal(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
         </div>
-        <div>
-          <label style={labelSt}>Personal Leave (days)</label>
-          <input type="number" min={0} max={99} step={0.01} value={personal} onChange={e => setPersonal(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
-        </div>
-        <button onClick={() => onSave(emp.id, { annual, sick, personal }, employmentType, daysPerWeek)} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>Save Balances</button>
+        <button onClick={() => onSave(emp.id, { annual, personal }, employmentType, daysPerWeek)} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>Save Balances</button>
       </div>
     </>
   );
@@ -1855,6 +2021,120 @@ function SwapForm({ employees, user, wk, days, getShift, SHIFTS, onSubmit, onCan
         <div><label style={labelSt}>Reason</label><input value={reason} onChange={e => setReason(e.target.value)} placeholder="Why do you need to swap?" style={inputSt} /></div>
         <button onClick={() => { if (targetId && date) onSubmit({ targetId, targetName: others.find(e => e.id === targetId)?.name, date, reason, weekKey: wk }); }} disabled={!targetId || !date} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity: (!targetId || !date) ? .5 : 1 }}>Submit Swap Request</button>
       </div>
+    </>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// PURCHASE FORM
+// ═════════════════════════════════════════════════════════════════════
+function PurchaseForm({ products, onSubmit, onCancel }) {
+  const [cart, setCart] = useState({});
+
+  const updateQty = (prodId, delta) => {
+    setCart(prev => {
+      const next = { ...prev };
+      const qty = (next[prodId] || 0) + delta;
+      if (qty <= 0) { delete next[prodId]; } else { next[prodId] = qty; }
+      return next;
+    });
+  };
+
+  const items = Object.entries(cart).map(([prodId, qty]) => {
+    const prod = products.find(p => p.id === prodId);
+    return prod ? { id: prodId, name: prod.name, price: prod.price, qty } : null;
+  }).filter(Boolean);
+
+  const total = items.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+  return (
+    <>
+      <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 14 }}>New Purchase Request</h3>
+      <div style={{ maxHeight: 360, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
+        {products.map(p => {
+          const qty = cart[p.id] || 0;
+          return (
+            <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, background: qty > 0 ? "var(--accent-bg)" : "var(--surface2)", border: `1px solid ${qty > 0 ? "var(--accent)" : "var(--border)"}22`, transition: "all .2s" }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 500 }}>{p.name}</div>
+                <div style={{ fontSize: 12, color: "var(--ink3)" }}>${p.price.toFixed(2)}</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {qty > 0 && (
+                  <button onClick={() => updateQty(p.id, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", color: "var(--ink2)" }}>−</button>
+                )}
+                {qty > 0 && <span style={{ fontSize: 14, fontWeight: 600, minWidth: 20, textAlign: "center" }}>{qty}</span>}
+                <button onClick={() => updateQty(p.id, 1)} style={{ width: 28, height: 28, borderRadius: 6, border: "none", background: "var(--accent)", color: "#fff", cursor: "pointer", fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>+</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {items.length > 0 && (
+        <div style={{ padding: "12px 14px", borderRadius: 8, background: "var(--surface2)", border: "1px solid var(--border)", marginBottom: 14 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 12, color: "var(--ink2)" }}>{items.reduce((s, i) => s + i.qty, 0)} items</span>
+            <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)" }}>${total.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
+      <button onClick={() => { if (items.length > 0) onSubmit({ items, total }); }} disabled={items.length === 0} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity: items.length === 0 ? .5 : 1 }}>Submit Purchase Request</button>
+    </>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// MANAGE PRODUCTS FORM (Owner only)
+// ═════════════════════════════════════════════════════════════════════
+function ManageProductsForm({ products, onSave, onCancel }) {
+  const [list, setList] = useState([...products]);
+  const [newName, setNewName] = useState("");
+  const [newPrice, setNewPrice] = useState("");
+
+  const addProduct = () => {
+    if (!newName.trim() || !newPrice) return;
+    const id = `prod-${Date.now()}`;
+    setList([...list, { id, name: newName.trim(), price: parseFloat(newPrice) }]);
+    setNewName("");
+    setNewPrice("");
+  };
+
+  const removeProduct = (id) => {
+    setList(list.filter(p => p.id !== id));
+  };
+
+  const updatePrice = (id, price) => {
+    setList(list.map(p => p.id === id ? { ...p, price: parseFloat(price) || 0 } : p));
+  };
+
+  const updateName = (id, name) => {
+    setList(list.map(p => p.id === id ? { ...p, name } : p));
+  };
+
+  return (
+    <>
+      <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 14 }}>Manage Products</h3>
+      <div style={{ maxHeight: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
+        {list.map(p => (
+          <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 7, background: "var(--surface2)", border: "1px solid var(--border)" }}>
+            <input value={p.name} onChange={e => updateName(p.id, e.target.value)} style={{ flex: 2, padding: "6px 8px", borderRadius: 5, border: "1px solid var(--border)", fontSize: 12, fontFamily: "inherit", background: "var(--surface)" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
+              <span style={{ fontSize: 12, color: "var(--ink3)" }}>$</span>
+              <input type="number" step="0.01" value={p.price} onChange={e => updatePrice(p.id, e.target.value)} style={{ width: 70, padding: "6px 8px", borderRadius: 5, border: "1px solid var(--border)", fontSize: 12, fontFamily: "inherit", background: "var(--surface)" }} />
+            </div>
+            <button onClick={() => removeProduct(p.id)} style={{ width: 26, height: 26, borderRadius: 5, border: "none", background: "rgba(220,38,38,.08)", color: "#DC2626", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>×</button>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
+        <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Product name" style={{ flex: 2, padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", fontSize: 12, fontFamily: "inherit" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
+          <span style={{ fontSize: 12, color: "var(--ink3)" }}>$</span>
+          <input type="number" step="0.01" value={newPrice} onChange={e => setNewPrice(e.target.value)} placeholder="0.00" style={{ width: 70, padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", fontSize: 12, fontFamily: "inherit" }} />
+        </div>
+        <button onClick={addProduct} disabled={!newName.trim() || !newPrice} style={{ padding: "8px 14px", borderRadius: 6, border: "none", background: "var(--accent)", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", opacity: (!newName.trim() || !newPrice) ? .5 : 1 }}>Add</button>
+      </div>
+      <button onClick={() => onSave(list)} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>Save Products</button>
     </>
   );
 }
