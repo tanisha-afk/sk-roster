@@ -20,58 +20,52 @@ const LEAVE_TYPES = ["Annual Leave", "Sick Leave", "Personal Leave", "Parental L
 // ─── SEED DATA ──────────────────────────────────────────────────────
 const SEED_EMPLOYEES = [
   // Management / Salaried
-  { name: "Raj Krishna", role: "Accounts Manager", dept: "Accounts", rate: 64.90, pin: "4104" },
-  { name: "Gopi Dhamija", role: "Production Supervisor", dept: "Production", rate: 40.87, pin: "8160" },
-  { name: "Prateek Kumar", role: "Production Supervisor", dept: "Production", rate: 37.30, pin: "1681" },
-  { name: "Prabhkeerat Singh", role: "Sales Representative", dept: "Sales", rate: 32.96, pin: "1547" },
-  { name: "Mohit Sivia", role: "Sales Representative", dept: "Sales", rate: 48.08, pin: "9738" },
+  { name: "Raj Krishna", role: "Accounts Manager", dept: "Accounts", rate: 64.90, pin: "4104", leaveInit: { annual: 35.1, sick: 19.1, personal: 0 }, empType: "full-time" },
+  { name: "Gopi Dhamija", role: "Production Supervisor", dept: "Production", rate: 40.87, pin: "8160", leaveInit: { annual: 29.1, sick: 13.4, personal: 0 }, empType: "full-time" },
+  { name: "Prateek Kumar", role: "Production Supervisor", dept: "Production", rate: 37.30, pin: "1681", leaveInit: { annual: 7.1, sick: 6.5, personal: 0 }, empType: "full-time" },
+  { name: "Prabhkeerat Singh", role: "Sales Representative", dept: "Sales", rate: 32.96, pin: "1547", leaveInit: { annual: 20.3, sick: 18.9, personal: 0 }, empType: "full-time" },
+  { name: "Mohit Sivia", role: "Sales Representative", dept: "Sales", rate: 48.08, pin: "9738", leaveInit: { annual: 10.6, sick: 10.8, personal: 0 }, empType: "full-time" },
   // Process Workers
-  { name: "Bushar Ahmed", role: "Process Worker", dept: "Production", rate: 29.50, pin: "1943" },
-  { name: "Sandesh Adhikari", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3819" },
-  { name: "Siddhant Amritkar", role: "Process Worker", dept: "Production", rate: 29.00, pin: "8175" },
-  { name: "Anannya Rehman Amiya", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5693" },
-  { name: "Majid Ali", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9529" },
-  { name: "Tikaram Badari Sharma", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1380" },
-  { name: "Kumaramanjunath Baleattiguppe Sadashivappa", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1797" },
-  { name: "Razia Bibi", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5316" },
-  { name: "Marites Cabaltera", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9821" },
-  { name: "Chetna Chetna", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6999" },
-  { name: "Anita Dangi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "1354" },
-  { name: "Eldefer Dequino", role: "Process Worker", dept: "Production", rate: 34.00, pin: "3608" },
-  { name: "Tanjilalam Emon", role: "Process Worker", dept: "Production", rate: 32.00, pin: "3204" },
-  { name: "Louie Fortes", role: "Process Worker", dept: "Production", rate: 31.50, pin: "8533" },
-  { name: "Jahid Hasan", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1818" },
-  { name: "Mdkamrul Hasan", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3996" },
-  { name: "Nimra Habib", role: "Process Worker", dept: "Production", rate: 26.00, pin: "8823" },
-  { name: "Navneet Kaur Virk", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5250" },
-  { name: "Gurpreet Kaur", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6770" },
-  { name: "Om Karki", role: "Process Worker", dept: "Production", rate: 26.00, pin: "4221" },
-  { name: "Sabnam Khadka", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1284" },
-  { name: "Ashwani Kumar Kumar", role: "Process Worker", dept: "Production", rate: 26.00, pin: "2855" },
-  { name: "Sang Kyung Lee", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5863" },
-  { name: "Manoj Manjunath", role: "Process Worker", dept: "Production", rate: 33.00, pin: "1309" },
-  { name: "Kundan Neupane", role: "Process Worker", dept: "Production", rate: 28.00, pin: "8233" },
-  { name: "Anjali Neupane", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3206" },
-  { name: "Sargam Nasrullah", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6406" },
-  { name: "Bora Ozcelik", role: "Process Worker", dept: "Production", rate: 28.50, pin: "4952" },
-  { name: "Sreejan Kumar Paul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6970" },
-  { name: "Amisha Pun", role: "Process Worker", dept: "Production", rate: 29.00, pin: "5165" },
-  { name: "Miskur Rumi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "2602" },
-  { name: "Rahul Rahul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3422" },
-  { name: "Yatin Sethi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "9273" },
-  { name: "Vijay Sharma", role: "Process Worker", dept: "Production", rate: 31.50, pin: "3271" },
-  { name: "Nidhi Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "2501" },
-  { name: "Harshit Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3823" },
-  { name: "Karthik Shelvaraju", role: "Process Worker", dept: "Production", rate: 28.00, pin: "4934" },
-  { name: "Abhay Singh", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5292" },
-  { name: "Ragwinder Singh", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9140" },
-  { name: "Devkaran Singh", role: "Process Worker", dept: "Production", rate: 29.00, pin: "1819" },
-  { name: "Rohan Sood", role: "Process Worker", dept: "Production", rate: 26.00, pin: "7269" },
-  { name: "Surendra Sunar", role: "Process Worker", dept: "Production", rate: 26.00, pin: "9772" },
-  { name: "Samundra Tuladhar", role: "Process Worker", dept: "Production", rate: 34.00, pin: "4325" },
-  { name: "Yash Yash", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9236" },
+  { name: "Bushar Ahmed", role: "Process Worker", dept: "Production", rate: 29.50, pin: "1943", leaveInit: { annual: 14.0, sick: 1.0, personal: 0 }, empType: "full-time" },
+  { name: "Sandesh Adhikari", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3819", leaveInit: { annual: 9.1, sick: 1.5, personal: 0 }, empType: "full-time" },
+  { name: "Anannya Rehman Amiya", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5693", leaveInit: { annual: 0.2, sick: 0.1, personal: 0 }, empType: "full-time" },
+  { name: "Majid Ali", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9529", leaveInit: { annual: 7.6, sick: 1.7, personal: 0 }, empType: "full-time" },
+  { name: "Tikaram Badari Sharma", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1380", leaveInit: { annual: 5.3, sick: 3.9, personal: 0 }, empType: "part-time" },
+  { name: "Kumaramanjunath Baleattiguppe Sadashivappa", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1797", leaveInit: { annual: 7.5, sick: 4.0, personal: 0 }, empType: "full-time" },
+  { name: "Razia Bibi", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5316", leaveInit: { annual: 14.9, sick: 10.1, personal: 0 }, empType: "full-time" },
+  { name: "Marites Cabaltera", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9821", leaveInit: { annual: 10.0, sick: 20.5, personal: 0 }, empType: "full-time" },
+  { name: "Chetna Chetna", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6999", leaveInit: { annual: 12.0, sick: 3.8, personal: 0 }, empType: "full-time" },
+  { name: "Anita Dangi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "1354", leaveInit: { annual: 3.8, sick: 4.5, personal: 0 }, empType: "full-time" },
+  { name: "Eldefer Dequino", role: "Process Worker", dept: "Production", rate: 34.00, pin: "3608", leaveInit: { annual: 10.8, sick: 16.5, personal: 0 }, empType: "full-time" },
+  { name: "Tanjilalam Emon", role: "Process Worker", dept: "Production", rate: 32.00, pin: "3204", leaveInit: { annual: 6.4, sick: 1.3, personal: 0 }, empType: "full-time" },
+  { name: "Louie Fortes", role: "Process Worker", dept: "Production", rate: 31.50, pin: "8533", leaveInit: { annual: 4.3, sick: 36.5, personal: 0 }, empType: "full-time" },
+  { name: "Jahid Hasan", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1818", leaveInit: { annual: 1.7, sick: 0.1, personal: 0 }, empType: "full-time" },
+  { name: "Mdkamrul Hasan", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3996", leaveInit: { annual: 9.7, sick: 0.2, personal: 0 }, empType: "full-time" },
+  { name: "Nimra Habib", role: "Process Worker", dept: "Production", rate: 26.00, pin: "8823", leaveInit: { annual: 0.8, sick: 0.4, personal: 0 }, empType: "full-time" },
+  { name: "Navneet Kaur Virk", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5250", leaveInit: { annual: 2.4, sick: 1.2, personal: 0 }, empType: "full-time" },
+  { name: "Sabnam Khadka", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1284", leaveInit: { annual: 0.5, sick: 0.1, personal: 0 }, empType: "part-time" },
+  { name: "Ashwani Kumar Kumar", role: "Process Worker", dept: "Production", rate: 26.00, pin: "2855", leaveInit: { annual: 12.5, sick: 3.8, personal: 0 }, empType: "full-time" },
+  { name: "Sang Kyung Lee", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5863", leaveInit: { annual: 10.6, sick: 0.6, personal: 0 }, empType: "full-time" },
+  { name: "Manoj Manjunath", role: "Process Worker", dept: "Production", rate: 33.00, pin: "1309", leaveInit: { annual: 31.0, sick: 15.5, personal: 0 }, empType: "full-time" },
+  { name: "Kundan Neupane", role: "Process Worker", dept: "Production", rate: 28.00, pin: "8233", leaveInit: { annual: 5.9, sick: 1.9, personal: 0 }, empType: "full-time" },
+  { name: "Sargam Nasrullah", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6406", leaveInit: { annual: 1.3, sick: 0.6, personal: 0 }, empType: "full-time" },
+  { name: "Bora Ozcelik", role: "Process Worker", dept: "Production", rate: 28.50, pin: "4952", leaveInit: { annual: 9.1, sick: 0.2, personal: 0 }, empType: "full-time" },
+  { name: "Sreejan Kumar Paul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6970", leaveInit: { annual: 8.5, sick: 4.6, personal: 0 }, empType: "full-time" },
+  { name: "Amisha Pun", role: "Process Worker", dept: "Production", rate: 29.00, pin: "5165", leaveInit: { annual: 6.2, sick: 4.5, personal: 0 }, empType: "full-time" },
+  { name: "Miskur Rumi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "2602", leaveInit: { annual: 6.7, sick: 8.3, personal: 0 }, empType: "full-time" },
+  { name: "Yatin Sethi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "9273", leaveInit: { annual: 13.0, sick: 2.3, personal: 0 }, empType: "full-time" },
+  { name: "Vijay Sharma", role: "Process Worker", dept: "Production", rate: 31.50, pin: "3271", leaveInit: { annual: 37.4, sick: 3.5, personal: 0 }, empType: "full-time" },
+  { name: "Nidhi Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "2501", leaveInit: { annual: 7.4, sick: 0.8, personal: 0 }, empType: "full-time" },
+  { name: "Harshit Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3823", leaveInit: { annual: 0.4, sick: 0.2, personal: 0 }, empType: "full-time" },
+  { name: "Karthik Shelvaraju", role: "Process Worker", dept: "Production", rate: 28.00, pin: "4934", leaveInit: { annual: 6.9, sick: 1.3, personal: 0 }, empType: "full-time" },
+  { name: "Abhay Singh", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5292", leaveInit: { annual: 5.4, sick: 2.4, personal: 0 }, empType: "full-time" },
+  { name: "Ragwinder Singh", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9140", leaveInit: { annual: 27.5, sick: 1.2, personal: 0 }, empType: "full-time" },
+  { name: "Devkaran Singh", role: "Process Worker", dept: "Production", rate: 29.00, pin: "1819", leaveInit: { annual: 3.3, sick: 0.7, personal: 0 }, empType: "full-time" },
+  { name: "Rohan Sood", role: "Process Worker", dept: "Production", rate: 26.00, pin: "7269", leaveInit: { annual: 8.9, sick: 1.8, personal: 0 }, empType: "full-time" },
+  { name: "Samundra Tuladhar", role: "Process Worker", dept: "Production", rate: 34.00, pin: "4325", leaveInit: { annual: 27.8, sick: 7.8, personal: 0 }, empType: "full-time" },
+  { name: "Yash Yash", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9236", leaveInit: { annual: 2.0, sick: 3.1, personal: 0 }, empType: "full-time" },
   // Owner
-  { name: "Tanisha Sharma", role: "Owner", dept: "Production", rate: 0, pin: "cherry2077" },
+  { name: "Tanisha Sharma", role: "Owner", dept: "Production", rate: 0, pin: "cherry2077", leaveInit: { annual: 50.4, sick: 25.2, personal: 0 }, empType: "full-time" },
 ];
 
 function generateUniquePin(usedPins) {
@@ -97,9 +91,9 @@ function buildEmployees() {
       clockedIn: false,
       clockInTime: null,
       hourlyRate: e.rate,
-      leaveBalance: { annual: 20, sick: 10, personal: 3 },
-      employmentType: "full-time",
-      daysPerWeek: 5,
+      leaveBalance: e.leaveInit || { annual: 20, sick: 10, personal: 3 },
+      employmentType: e.empType || "full-time",
+      daysPerWeek: e.empType === "part-time" ? (e.daysPerWeek || 3) : 5,
     };
   });
 }
@@ -194,12 +188,13 @@ nav::-webkit-scrollbar { display: none; }
 .fade-up { animation: fadeUp .35s ease both; }
 .fade-in { animation: fadeIn .25s ease both; }
 @media print {
-  header, nav, button, .fade-up { animation: none !important; }
+  header, nav, .fade-up { animation: none !important; }
   header { position: static !important; }
   nav { display: none !important; }
-  button { display: none !important; }
+  button:not(.print-keep) { display: none !important; }
   main { padding: 0 !important; }
   body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
 `;
 
@@ -832,11 +827,11 @@ export default function SKRoster() {
                       let total = 0;
                       weekDays.forEach(d => {
                         const shift = getShift(emp.id, d);
-                        if (shift && SHIFTS[shift]) total += SHIFTS[shift].hours;
+                        if (shift && SHIFTS[shift]) total += (SHIFTS[shift].hours - 0.5);
                       });
-                      return { emp, total };
+                      return { emp, total: Math.round(total * 10) / 10 };
                     }).filter(e => e.total > 0).sort((a, b) => b.total - a.total);
-                    const grandTotal = empHours.reduce((a, b) => a + b.total, 0);
+                    const grandTotal = Math.round(empHours.reduce((a, b) => a + b.total, 0) * 10) / 10;
                     return (
                       <>
                         <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)", marginBottom: 8 }}>{grandTotal} <span style={{ fontSize: 14, fontWeight: 400, color: "var(--ink2)" }}>total hours</span></div>
@@ -844,7 +839,7 @@ export default function SKRoster() {
                           {empHours.slice(0, 15).map(({ emp, total }) => (
                             <div key={emp.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 11 }}>
                               <span>{emp.name}</span>
-                              <span style={{ fontWeight: 600, color: total > 38 ? "var(--red)" : "var(--ink)" }}>{total}h{total > 38 ? " ⚠️" : ""}</span>
+                              <span style={{ fontWeight: 600, color: total > 40 ? "var(--red)" : "var(--ink)" }}>{total}h{total > 40 ? " ⚠️" : ""}</span>
                             </div>
                           ))}
                         </div>
@@ -959,7 +954,7 @@ export default function SKRoster() {
                     <div>
                       <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Fraunces', serif", color: SHIFTS[shift]?.color }}>{SHIFTS[shift]?.label}</div>
                       <div style={{ fontSize: 14, color: "var(--ink2)", marginTop: 4 }}>{SHIFTS[shift]?.time}</div>
-                      <div style={{ fontSize: 12, color: "var(--ink3)", marginTop: 2 }}>{SHIFTS[shift]?.hours} hours</div>
+                      <div style={{ fontSize: 12, color: "var(--ink3)", marginTop: 2 }}>{SHIFTS[shift]?.hours - 0.5} hours (excl. 30min lunch)</div>
                     </div>
                   );
                 })()}
@@ -973,9 +968,10 @@ export default function SKRoster() {
                   let total = 0;
                   const dayShifts = weekDays.map(d => {
                     const shift = getShift(user.id, d);
-                    if (shift && SHIFTS[shift]) total += SHIFTS[shift].hours;
+                    if (shift && SHIFTS[shift]) total += (SHIFTS[shift].hours - 0.5);
                     return { date: d, shift };
                   });
+                  total = Math.round(total * 10) / 10;
                   return (
                     <>
                       <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)", marginBottom: 8 }}>{total} <span style={{ fontSize: 14, fontWeight: 400, color: "var(--ink2)" }}>hours</span></div>
@@ -983,7 +979,7 @@ export default function SKRoster() {
                         {dayShifts.map((ds, i) => (
                           <div key={i} style={{ flex: 1, textAlign: "center", padding: "4px 2px", borderRadius: 4, background: ds.shift ? (SHIFTS[ds.shift]?.bg || "#f0f0f0") : "var(--surface2)", fontSize: 9 }}>
                             <div style={{ fontWeight: 500, color: "var(--ink3)" }}>{["M","T","W","T","F","S","S"][i]}</div>
-                            <div style={{ fontWeight: 600, color: ds.shift ? SHIFTS[ds.shift]?.color : "var(--ink3)", marginTop: 2 }}>{ds.shift ? SHIFTS[ds.shift]?.hours : "—"}</div>
+                            <div style={{ fontWeight: 600, color: ds.shift ? SHIFTS[ds.shift]?.color : "var(--ink3)", marginTop: 2 }}>{ds.shift ? (SHIFTS[ds.shift]?.hours - 0.5) : "—"}</div>
                           </div>
                         ))}
                       </div>
@@ -1109,7 +1105,7 @@ export default function SKRoster() {
                             <div style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: "rgba(239,68,68,.08)", color: "#DC2626", fontSize: 8, fontWeight: 600, border: "1px solid rgba(239,68,68,.15)", textAlign: "center", lineHeight: 1.3 }}>On<br/>Leave</div>
                           ) : shift ? (
                             isManager ? (
-                              <button onClick={() => removeShift(emp.id, iso)} title="Click to remove" style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: SHIFTS[shift]?.bg || "#f0f0f0", color: SHIFTS[shift]?.color || "#333", fontSize: 9, fontWeight: 600, border: `1px solid ${SHIFTS[shift]?.color || "#ccc"}22`, cursor: "pointer", fontFamily: "inherit", lineHeight: 1.2, textAlign: "center", transition: "transform .15s" }} onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
+                              <button className="print-keep" onClick={() => removeShift(emp.id, iso)} title="Click to remove" style={{ width: "92%", padding: "4px 2px", borderRadius: 6, background: SHIFTS[shift]?.bg || "#f0f0f0", color: SHIFTS[shift]?.color || "#333", fontSize: 9, fontWeight: 600, border: `1px solid ${SHIFTS[shift]?.color || "#ccc"}22`, cursor: "pointer", fontFamily: "inherit", lineHeight: 1.2, textAlign: "center", transition: "transform .15s" }} onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
                                 {SHIFTS[shift]?.label?.replace(" Process", " Proc") || shift}
                                 <div style={{ fontSize: 8, fontWeight: 400, opacity: .7, marginTop: 1 }}>{SHIFTS[shift]?.time?.split("–")[0]?.trim()}</div>
                               </button>
@@ -1184,7 +1180,7 @@ export default function SKRoster() {
                   return <div key={i} style={{ padding: "8px 4px", textAlign: "center", color: isToday ? "var(--accent)" : "var(--ink3)" }}>{fmtDate(d, "day")}<br/><span style={{ fontWeight: 700 }}>{fmtDate(d, "num")}</span></div>;
                 })}
               </div>
-              {employees.filter(e => e.dept === user.dept && e.id !== user.id && !e.isOwner).map(emp => (
+              {employees.filter(e => e.dept === user.dept && e.id !== user.id && !e.isOwner).sort((a, b) => a.name.localeCompare(b.name)).map(emp => (
                 <div key={emp.id} style={{ display: "grid", gridTemplateColumns: `140px repeat(7, 1fr)`, borderTop: "1px solid var(--border)", alignItems: "center" }}>
                   <div style={{ padding: "6px 12px", display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ width: 24, height: 24, borderRadius: 6, background: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 88%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 600, color: `hsl(${parseInt(emp.id.split("-")[1]) * 43 % 360}, 35%, 40%)` }}>{emp.initials}</div>
@@ -1244,7 +1240,7 @@ export default function SKRoster() {
               <div style={{ fontSize: 12, fontWeight: 500, opacity: .5, marginBottom: 10 }}>Currently clocked in</div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {employees.filter(e => e.clockedIn).length === 0 && <div style={{ fontSize: 12, opacity: .4 }}>Nobody currently clocked in</div>}
-                {employees.filter(e => e.clockedIn).map(e => (
+                {employees.filter(e => e.clockedIn).sort((a, b) => a.name.localeCompare(b.name)).map(e => (
                   <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 7, background: "rgba(21,128,61,.15)", border: "1px solid rgba(21,128,61,.2)" }}>
                     <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22C55E" }} />
                     <span style={{ fontSize: 12, fontWeight: 500 }}>{e.name}</span>
@@ -1437,7 +1433,7 @@ export default function SKRoster() {
             {modal.type === "newLeave" && <LeaveForm onSubmit={submitLeave} onCancel={() => setModal(null)} user={user} roster={roster} weekStart={weekStart} />}
 
             {/* New Swap */}
-            {modal.type === "newSwap" && <SwapForm employees={employees} user={user} wk={wk} days={days} getShift={getShift} onSubmit={submitSwap} onCancel={() => setModal(null)} />}
+            {modal.type === "newSwap" && <SwapForm employees={employees} user={user} wk={wk} days={days} getShift={getShift} SHIFTS={SHIFTS} onSubmit={submitSwap} onCancel={() => setModal(null)} />}
 
             {/* Add Employee */}
             {modal.type === "addEmployee" && <AddEmployeeForm onSubmit={addEmployee} onCancel={() => setModal(null)} />}
@@ -1490,7 +1486,7 @@ function LoginScreen({ employees, onLogin, onReset }) {
   const [locked, setLocked] = useState(false);
   const [lockTimer, setLockTimer] = useState(0);
 
-  const filtered = search ? employees.filter(e => e.name.toLowerCase().includes(search.toLowerCase())) : employees;
+  const filtered = (search ? employees.filter(e => e.name.toLowerCase().includes(search.toLowerCase())) : employees).sort((a, b) => a.name.localeCompare(b.name));
   const managers = employees.filter(e => e.isManager);
 
   const tryLogin = (emp) => {
@@ -1609,11 +1605,9 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
     dateHint = "Minimum 2 weeks notice required";
   }
 
-  // Check if selected sick leave date falls on a rostered shift TODAY
-  const isShortNoticeSick = (() => {
+  // Check if selected sick leave date falls on a rostered shift
+  const isRosteredSickDay = (() => {
     if (!isSick || !startDate) return false;
-    if (startDate !== todayStr) return false; // only warn if start date is today
-    // Check if employee has a shift on that date
     if (!user || !roster) return false;
     const selectedDate = new Date(startDate + "T00:00:00");
     const wkStart = getWeekStart(selectedDate);
@@ -1621,8 +1615,18 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
     const dayKey = fmtDate(selectedDate, "iso");
     const rosterWeek = roster[wk];
     if (!rosterWeek) return false;
-    const shift = rosterWeek[`${user.id}_${dayKey}`];
-    return !!shift; // true if they have a shift that day
+    const shift = rosterWeek[user.id]?.[dayKey];
+    return !!shift;
+  })();
+
+  // Check if annual/personal leave dates violate 14-day rule
+  const isDateTooSoon = (() => {
+    if (isSick || type === "Workers Comp" || type === "Unpaid Leave" || type === "Parental Leave") return false;
+    if (!startDate) return false;
+    const twoWeeks = new Date(today);
+    twoWeeks.setDate(twoWeeks.getDate() + 14);
+    const twoWeeksStr = twoWeeks.toISOString().split("T")[0];
+    return startDate < twoWeeksStr;
   })();
 
   // Reset dates when type changes if they fall outside new range
@@ -1631,6 +1635,8 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
     setStartDate("");
     setEndDate("");
   };
+
+  const canSubmit = startDate && endDate && !isDateTooSoon && !isRosteredSickDay;
 
   return (
     <>
@@ -1645,9 +1651,10 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
           <div><label style={labelSt}>Start Date</label><input type="date" value={startDate} min={minStart} max={maxStart} onChange={e => setStartDate(e.target.value)} style={inputSt} /></div>
           <div><label style={labelSt}>End Date</label><input type="date" value={endDate} min={startDate || minStart} onChange={e => setEndDate(e.target.value)} style={inputSt} /></div>
         </div>
-        {isShortNoticeSick && <div style={{ fontSize: 11, color: "#DC2626", padding: "8px 10px", borderRadius: 6, background: "rgba(220,38,38,.08)", border: "1px solid rgba(220,38,38,.15)", lineHeight: 1.5 }}>⚠️ You are scheduled to work on this day. Short notice sick leave approval is not guaranteed without supporting documentation.</div>}
+        {isDateTooSoon && <div style={{ fontSize: 11, color: "#DC2626", padding: "8px 10px", borderRadius: 6, background: "rgba(220,38,38,.08)", border: "1px solid rgba(220,38,38,.15)", lineHeight: 1.5 }}>🚫 {type} requires a minimum of 2 weeks notice. Please select a date at least 14 days from today.</div>}
+        {isRosteredSickDay && <div style={{ fontSize: 11, color: "#DC2626", padding: "8px 10px", borderRadius: 6, background: "rgba(220,38,38,.08)", border: "1px solid rgba(220,38,38,.15)", lineHeight: 1.5 }}>🚫 You cannot apply for sick leave on a day you are rostered to work. Please contact your manager directly if you are unwell today.</div>}
         <div><label style={labelSt}>{isSick ? "Reason (attach medical certificate by email)" : "Reason"}</label><input value={reason} onChange={e => setReason(e.target.value)} placeholder={isSick ? "e.g. Unwell — certificate to follow" : "Brief reason..."} style={inputSt} /></div>
-        <button onClick={() => { if (startDate && endDate) onSubmit({ type, startDate, endDate, reason }); }} disabled={!startDate || !endDate} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity: (!startDate || !endDate) ? .5 : 1 }}>Submit Request</button>
+        <button onClick={() => { if (canSubmit) onSubmit({ type, startDate, endDate, reason }); }} disabled={!canSubmit} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity: !canSubmit ? .5 : 1 }}>Submit Request</button>
       </div>
     </>
   );
@@ -1816,12 +1823,12 @@ function ManageShiftsForm({ shifts, onSave, onCancel }) {
 // ═════════════════════════════════════════════════════════════════════
 // SWAP FORM
 // ═════════════════════════════════════════════════════════════════════
-function SwapForm({ employees, user, wk, days, getShift, onSubmit, onCancel }) {
+function SwapForm({ employees, user, wk, days, getShift, SHIFTS, onSubmit, onCancel }) {
   const [targetId, setTargetId] = useState("");
   const [date, setDate] = useState("");
   const [reason, setReason] = useState("");
 
-  const others = employees.filter(e => e.id !== user.id);
+  const others = employees.filter(e => e.id !== user.id).sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <>
