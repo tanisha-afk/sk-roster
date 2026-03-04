@@ -1565,6 +1565,7 @@ function SKRosterInner() {
                   </div>
                   {user?.isOwner && <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 4 }}>PIN: {emp.pin}</div>}
                   {(user?.isOwner || user?.isAccounts) && <button onClick={() => setModal({ type: "editLeaveBalance", emp })} style={{ fontSize: 10, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "4px 10px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginTop: 6 }}>Edit Leave Balances</button>}
+                  {user?.isOwner && emp.id !== user.id && <button onClick={function() { if (window.confirm("Remove " + emp.name + " from the roster? This cannot be undone.")) { var next = employees.filter(function(e) { return e.id !== emp.id; }); setEmployees(next); persist(STORE_KEYS.employees, next); notify(emp.name + " removed"); } }} style={{ fontSize: 10, color: "#DC2626", background: "rgba(220,38,38,.08)", border: "none", padding: "4px 10px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginTop: 4 }}>Remove Employee</button>}
                 </div>
               ))}
             </div>
