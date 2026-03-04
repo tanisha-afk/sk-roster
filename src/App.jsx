@@ -1,6 +1,31 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { fbLoad, fbSave, fbListen } from "./firebase-storage";
 
+// ─── ERROR BOUNDARY ───────────────────────────────────────────────
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, fontFamily: "sans-serif", textAlign: "center" }}>
+          <h2 style={{ color: "#DC2626" }}>Something went wrong</h2>
+          <pre style={{ background: "#f5f5f5", padding: 16, borderRadius: 8, textAlign: "left", fontSize: 12, overflow: "auto", maxWidth: 600, margin: "16px auto" }}>
+            {this.state.error?.toString()}
+          </pre>
+          <button onClick={() => { this.setState({ hasError: false, error: null }); }} style={{ padding: "8px 20px", borderRadius: 6, border: "none", background: "#B45309", color: "#fff", cursor: "pointer", fontSize: 14 }}>Try Again</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // ─── COMPANY LOGO ─────────────────────────────────────────────────
 
 // ─── CONFIG: YOUR EXACT SHIFT PATTERNS ─────────────────────────────
@@ -297,7 +322,7 @@ function exportMYOBTimesheets(timelog, employees, dateFrom, dateTo) {
 // ═══════════════════════════════════════════════════════════════════════
 //  MAIN APP
 // ═══════════════════════════════════════════════════════════════════════
-export default function SKRoster() {
+function SKRosterInner() {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState(null); // logged-in employee obj
   const [employees, setEmployees] = useState([]);
@@ -1498,74 +1523,49 @@ export default function SKRoster() {
         )}
 
         {/* ──── SHOP ──── */}
-        {tab === "shop" && (() => {
-          const safePurchases = Array.isArray(purchases) ? purchases : [];
-          const safeProducts = Array.isArray(products) ? products : [];
-          const pending = safePurchases.filter(p => p.status === "pending");
-          const history = (isManager || isAccounts) ? safePurchases.filter(p => p.status !== "pending") : safePurchases.filter(p => p.employeeId === user.id);
-
-          return (
+        {tab === "shop" && (
           <div className="fade-up">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>{(isManager || isAccounts) ? "Staff Purchases" : "Staff Shop"}</h2>
-              <div style={{ display: "flex", gap: 8 }}>
-                {isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ ...btnPrimary, background: "var(--surface)", color: "var(--ink)", border: "1px solid var(--border)" }}>Manage Products</button>}
-                <button onClick={() => setModal({ type: "newPurchase" })} style={btnPrimary}><I.Plus /> New Purchase</button>
-              </div>
+            <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Staff Shop</h2>
+            <p style={{ color: "var(--ink2)", marginBottom: 14 }}>Purchase products below.</p>
+            <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+              {isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ padding: "8px 14px", borderRadius: 7, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 500, color: "var(--ink2)" }}>Manage Products</button>}
+              <button onClick={() => setModal({ type: "newPurchase" })} style={btnPrimary}>New Purchase</button>
             </div>
-
-            {(isManager || isAccounts) && pending.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>Pending Approval ({pending.length})</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {pending.map(p => (
-                    <div key={p.id} style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "14px 18px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>Purchases</div>
+            {(!purchases || purchases.length === 0) ? (
+              <div style={{ fontSize: 12, color: "var(--ink3)", padding: 20, textAlign: "center" }}>No purchases yet</div>
+            ) : (
+              <div>
+                {purchases.map(function(p) {
+                  var itemsText = (p.items || []).map(function(item) { return item.qty + "x " + item.name; }).join(", ");
+                  var totalText = p.total != null ? p.total.toFixed(2) : "0.00";
+                  return (
+                    <div key={p.id} style={{ background: "var(--surface)", borderRadius: 12, border: "1px solid var(--border)", padding: "12px 16px", marginBottom: 6 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div>
-                          <div style={{ fontWeight: 600, fontSize: 14 }}>{p.employeeName}</div>
-                          <div style={{ fontSize: 11, color: "var(--ink3)" }}>{p.submittedDate} at {p.submittedTime}</div>
+                          <div style={{ fontWeight: 500, fontSize: 13 }}>{p.employeeName || "You"}</div>
+                          <div style={{ fontSize: 11, color: "var(--ink3)" }}>{itemsText}</div>
+                          <div style={{ fontSize: 10, color: "var(--ink3)" }}>{p.submittedDate || ""}</div>
                         </div>
-                        <div style={{ fontWeight: 700, fontSize: 16, color: "var(--accent)", fontFamily: "'Fraunces', serif" }}>{"$"}{(p.total || 0).toFixed(2)}</div>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontWeight: 600 }}>{"$"}{totalText}</div>
+                          <div style={{ fontSize: 10, fontWeight: 600, color: p.status === "approved" ? "#15803D" : p.status === "declined" ? "#DC2626" : "#D97706" }}>{p.status}</div>
+                        </div>
                       </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
-                        {(p.items || []).map((item, i) => (
-                          <span key={i} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, background: "var(--surface2)", border: "1px solid var(--border)" }}>{item.qty}x {item.name}</span>
-                        ))}
-                      </div>
-                      <div style={{ display: "flex", gap: 6 }}>
-                        <button onClick={() => handlePurchase(p.id, "approved", "payroll deduction")} style={{ flex: 1, padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(21,128,61,.08)", color: "#15803D", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Approve - Payroll</button>
-                        <button onClick={() => handlePurchase(p.id, "approved", "paid cash")} style={{ flex: 1, padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(14,165,233,.08)", color: "#0EA5E9", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Approve - Cash</button>
-                        <button onClick={() => handlePurchase(p.id, "declined")} style={{ padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(220,38,38,.08)", color: "#DC2626", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Decline</button>
-                      </div>
+                      {(isManager || isAccounts) && p.status === "pending" && (
+                        <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                          <button onClick={() => handlePurchase(p.id, "approved", "payroll deduction")} style={{ padding: "5px 10px", borderRadius: 5, border: "none", background: "rgba(21,128,61,.1)", color: "#15803D", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Payroll</button>
+                          <button onClick={() => handlePurchase(p.id, "approved", "paid cash")} style={{ padding: "5px 10px", borderRadius: 5, border: "none", background: "rgba(14,165,233,.1)", color: "#0EA5E9", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cash</button>
+                          <button onClick={() => handlePurchase(p.id, "declined")} style={{ padding: "5px 10px", borderRadius: 5, border: "none", background: "rgba(220,38,38,.1)", color: "#DC2626", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Decline</button>
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             )}
-
-            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>
-              {(isManager || isAccounts) ? "All Purchases" : "My Purchases"}
-            </div>
-            {history.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {history.sort((a, b) => (b.id || "").localeCompare(a.id || "")).map(p => (
-                  <div key={p.id} style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <div style={{ fontWeight: 500, fontSize: 13 }}>{(isManager || isAccounts) ? p.employeeName : (p.items || []).map(i => i.qty + "x " + i.name).join(", ")}</div>
-                      {(isManager || isAccounts) && <div style={{ fontSize: 11, color: "var(--ink3)" }}>{(p.items || []).map(i => i.qty + "x " + i.name).join(", ")}</div>}
-                      <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 2 }}>{p.submittedDate}{p.paymentMethod ? " - " + p.paymentMethod : ""}</div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontWeight: 600, fontSize: 14 }}>{"$"}{(p.total || 0).toFixed(2)}</span>
-                      <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, fontWeight: 600, background: p.status === "approved" ? "rgba(21,128,61,.08)" : p.status === "declined" ? "rgba(220,38,38,.08)" : "rgba(217,119,6,.08)", color: p.status === "approved" ? "#15803D" : p.status === "declined" ? "#DC2626" : "#D97706" }}>{p.status}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : <div style={{ fontSize: 12, color: "var(--ink3)", padding: 20, textAlign: "center" }}>No purchases yet</div>}
           </div>
-          );
-        })()}
+        )}
       </main>
 
       {/* ──── MODALS ──── */}
@@ -1642,6 +1642,10 @@ export default function SKRoster() {
       )}
     </div>
   );
+}
+
+export default function SKRoster() {
+  return <ErrorBoundary><SKRosterInner /></ErrorBoundary>;
 }
 
 // ═════════════════════════════════════════════════════════════════════
