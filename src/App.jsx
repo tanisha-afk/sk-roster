@@ -1818,7 +1818,7 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
   // Date restrictions based on leave type
   const isSick = type === "Personal/Sick Leave";
   const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
+  const todayStr = fmtDate(today, "iso");
 
   let minStart, maxStart, dateHint;
   if (isSick) {
@@ -1834,7 +1834,7 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
     // Annual & Personal: 14 days notice
     const twoWeeks = new Date(today);
     twoWeeks.setDate(twoWeeks.getDate() + 14);
-    minStart = twoWeeks.toISOString().split("T")[0];
+    minStart = fmtDate(twoWeeks, "iso");
     maxStart = undefined;
     dateHint = "Minimum 2 weeks notice required";
   }
@@ -1859,7 +1859,7 @@ function LeaveForm({ onSubmit, onCancel, user, roster, weekStart }) {
     if (!startDate) return false;
     const twoWeeks = new Date(today);
     twoWeeks.setDate(twoWeeks.getDate() + 14);
-    const twoWeeksStr = twoWeeks.toISOString().split("T")[0];
+    const twoWeeksStr = fmtDate(twoWeeks, "iso");
     return startDate < twoWeeksStr;
   })();
 
