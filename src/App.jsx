@@ -1498,75 +1498,74 @@ export default function SKRoster() {
         )}
 
         {/* ──── SHOP ──── */}
-        {tab === "shop" && (
+        {tab === "shop" && (() => {
+          const safePurchases = Array.isArray(purchases) ? purchases : [];
+          const safeProducts = Array.isArray(products) ? products : [];
+          const pending = safePurchases.filter(p => p.status === "pending");
+          const history = (isManager || isAccounts) ? safePurchases.filter(p => p.status !== "pending") : safePurchases.filter(p => p.employeeId === user.id);
+
+          return (
           <div className="fade-up">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
               <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>{(isManager || isAccounts) ? "Staff Purchases" : "Staff Shop"}</h2>
               <div style={{ display: "flex", gap: 8 }}>
-                {isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ ...btnPrimary, background: "var(--surface)", color: "var(--ink)", border: "1px solid var(--border)" }}><I.FileText size={14} /> Manage Products</button>}
+                {isOwner && <button onClick={() => setModal({ type: "manageProducts" })} style={{ ...btnPrimary, background: "var(--surface)", color: "var(--ink)", border: "1px solid var(--border)" }}>Manage Products</button>}
                 <button onClick={() => setModal({ type: "newPurchase" })} style={btnPrimary}><I.Plus /> New Purchase</button>
               </div>
             </div>
 
-            {/* Pending purchases (managers/accounts/owner) */}
-            {(isManager || isAccounts) && (() => {
-              const pending = purchases.filter(p => p.status === "pending");
-              return pending.length > 0 ? (
-                <>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>Pending Approval ({pending.length})</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-                    {pending.map(p => (
-                      <div key={p.id} style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "14px 18px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                          <div>
-                            <div style={{ fontWeight: 600, fontSize: 14 }}>{p.employeeName}</div>
-                            <div style={{ fontSize: 11, color: "var(--ink3)" }}>{p.submittedDate} at {p.submittedTime}</div>
-                          </div>
-                          <div style={{ fontWeight: 700, fontSize: 16, color: "var(--accent)", fontFamily: "'Fraunces', serif" }}>${p.total.toFixed(2)}</div>
+            {(isManager || isAccounts) && pending.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>Pending Approval ({pending.length})</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {pending.map(p => (
+                    <div key={p.id} style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "14px 18px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: 14 }}>{p.employeeName}</div>
+                          <div style={{ fontSize: 11, color: "var(--ink3)" }}>{p.submittedDate} at {p.submittedTime}</div>
                         </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
-                          {p.items.map((item, i) => (
-                            <span key={i} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, background: "var(--surface2)", border: "1px solid var(--border)" }}>{item.qty}× {item.name}</span>
-                          ))}
-                        </div>
-                        <div style={{ display: "flex", gap: 6 }}>
-                          <button onClick={() => handlePurchase(p.id, "approved", "payroll deduction")} style={{ flex: 1, padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(21,128,61,.08)", color: "#15803D", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Approve — Payroll</button>
-                          <button onClick={() => handlePurchase(p.id, "approved", "paid cash")} style={{ flex: 1, padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(14,165,233,.08)", color: "#0EA5E9", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Approve — Cash</button>
-                          <button onClick={() => handlePurchase(p.id, "declined")} style={{ padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(220,38,38,.08)", color: "#DC2626", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Decline</button>
-                        </div>
+                        <div style={{ fontWeight: 700, fontSize: 16, color: "var(--accent)", fontFamily: "'Fraunces', serif" }}>{"$"}{(p.total || 0).toFixed(2)}</div>
                       </div>
-                    ))}
-                  </div>
-                </>
-              ) : null;
-            })()}
-
-            {/* Purchase history */}
-            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>
-              {(isManager || isAccounts) ? "All Purchases" : "My Purchases"}
-            </div>
-            {(() => {
-              const list = (isManager || isAccounts) ? purchases.filter(p => p.status !== "pending") : purchases.filter(p => p.employeeId === user.id);
-              return list.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  {list.sort((a, b) => b.id.localeCompare(a.id)).map(p => (
-                    <div key={p.id} style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div>
-                        <div style={{ fontWeight: 500, fontSize: 13 }}>{(isManager || isAccounts) ? p.employeeName : p.items.map(i => `${i.qty}× ${i.name}`).join(", ")}</div>
-                        {(isManager || isAccounts) && <div style={{ fontSize: 11, color: "var(--ink3)" }}>{p.items.map(i => `${i.qty}× ${i.name}`).join(", ")}</div>}
-                        <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 2 }}>{p.submittedDate}{p.paymentMethod ? ` — ${p.paymentMethod}` : ""}</div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
+                        {(p.items || []).map((item, i) => (
+                          <span key={i} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, background: "var(--surface2)", border: "1px solid var(--border)" }}>{item.qty}x {item.name}</span>
+                        ))}
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{ fontWeight: 600, fontSize: 14 }}>${p.total.toFixed(2)}</span>
-                        <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, fontWeight: 600, background: p.status === "approved" ? "rgba(21,128,61,.08)" : p.status === "declined" ? "rgba(220,38,38,.08)" : "rgba(217,119,6,.08)", color: p.status === "approved" ? "#15803D" : p.status === "declined" ? "#DC2626" : "#D97706" }}>{p.status}</span>
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <button onClick={() => handlePurchase(p.id, "approved", "payroll deduction")} style={{ flex: 1, padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(21,128,61,.08)", color: "#15803D", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Approve - Payroll</button>
+                        <button onClick={() => handlePurchase(p.id, "approved", "paid cash")} style={{ flex: 1, padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(14,165,233,.08)", color: "#0EA5E9", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Approve - Cash</button>
+                        <button onClick={() => handlePurchase(p.id, "declined")} style={{ padding: "8px 12px", borderRadius: 7, border: "none", background: "rgba(220,38,38,.08)", color: "#DC2626", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Decline</button>
                       </div>
                     </div>
                   ))}
                 </div>
-              ) : <div style={{ fontSize: 12, color: "var(--ink3)", padding: 20, textAlign: "center" }}>No purchases yet</div>;
-            })()}
+              </div>
+            )}
+
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink2)", marginBottom: 8 }}>
+              {(isManager || isAccounts) ? "All Purchases" : "My Purchases"}
+            </div>
+            {history.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {history.sort((a, b) => (b.id || "").localeCompare(a.id || "")).map(p => (
+                  <div key={p.id} style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontWeight: 500, fontSize: 13 }}>{(isManager || isAccounts) ? p.employeeName : (p.items || []).map(i => i.qty + "x " + i.name).join(", ")}</div>
+                      {(isManager || isAccounts) && <div style={{ fontSize: 11, color: "var(--ink3)" }}>{(p.items || []).map(i => i.qty + "x " + i.name).join(", ")}</div>}
+                      <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 2 }}>{p.submittedDate}{p.paymentMethod ? " - " + p.paymentMethod : ""}</div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontWeight: 600, fontSize: 14 }}>{"$"}{(p.total || 0).toFixed(2)}</span>
+                      <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, fontWeight: 600, background: p.status === "approved" ? "rgba(21,128,61,.08)" : p.status === "declined" ? "rgba(220,38,38,.08)" : "rgba(217,119,6,.08)", color: p.status === "approved" ? "#15803D" : p.status === "declined" ? "#DC2626" : "#D97706" }}>{p.status}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : <div style={{ fontSize: 12, color: "var(--ink3)", padding: 20, textAlign: "center" }}>No purchases yet</div>}
           </div>
-        )}
+          );
+        })()}
       </main>
 
       {/* ──── MODALS ──── */}
@@ -2030,6 +2029,7 @@ function SwapForm({ employees, user, wk, days, getShift, SHIFTS, onSubmit, onCan
 // ═════════════════════════════════════════════════════════════════════
 function PurchaseForm({ products, onSubmit, onCancel }) {
   const [cart, setCart] = useState({});
+  const safeProducts = Array.isArray(products) ? products : [];
 
   const updateQty = (prodId, delta) => {
     setCart(prev => {
@@ -2041,7 +2041,7 @@ function PurchaseForm({ products, onSubmit, onCancel }) {
   };
 
   const items = Object.entries(cart).map(([prodId, qty]) => {
-    const prod = products.find(p => p.id === prodId);
+    const prod = safeProducts.find(p => p.id === prodId);
     return prod ? { id: prodId, name: prod.name, price: prod.price, qty } : null;
   }).filter(Boolean);
 
@@ -2051,17 +2051,17 @@ function PurchaseForm({ products, onSubmit, onCancel }) {
     <>
       <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 14 }}>New Purchase Request</h3>
       <div style={{ maxHeight: 360, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
-        {products.map(p => {
+        {safeProducts.map(p => {
           const qty = cart[p.id] || 0;
           return (
             <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, background: qty > 0 ? "var(--accent-bg)" : "var(--surface2)", border: qty > 0 ? "1px solid var(--accent)" : "1px solid var(--border)", transition: "all .2s" }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500 }}>{p.name}</div>
-                <div style={{ fontSize: 12, color: "var(--ink3)" }}>${p.price.toFixed(2)}</div>
+                <div style={{ fontSize: 12, color: "var(--ink3)" }}>{"$"}{p.price.toFixed(2)}</div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 {qty > 0 && (
-                  <button onClick={() => updateQty(p.id, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", color: "var(--ink2)" }}>−</button>
+                  <button onClick={() => updateQty(p.id, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", color: "var(--ink2)" }}>-</button>
                 )}
                 {qty > 0 && <span style={{ fontSize: 14, fontWeight: 600, minWidth: 20, textAlign: "center" }}>{qty}</span>}
                 <button onClick={() => updateQty(p.id, 1)} style={{ width: 28, height: 28, borderRadius: 6, border: "none", background: "var(--accent)", color: "#fff", cursor: "pointer", fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>+</button>
@@ -2074,7 +2074,7 @@ function PurchaseForm({ products, onSubmit, onCancel }) {
         <div style={{ padding: "12px 14px", borderRadius: 8, background: "var(--surface2)", border: "1px solid var(--border)", marginBottom: 14 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ fontSize: 12, color: "var(--ink2)" }}>{items.reduce((s, i) => s + i.qty, 0)} items</span>
-            <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)" }}>${total.toFixed(2)}</span>
+            <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)" }}>{"$"}{total.toFixed(2)}</span>
           </div>
         </div>
       )}
