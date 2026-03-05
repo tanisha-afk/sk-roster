@@ -1456,18 +1456,21 @@ function SKRosterInner() {
             </div>}
             {/* Log table */}
             <div style={{ background: "var(--surface)", borderRadius: "var(--radius-lg)", border: "1px solid var(--border)", overflow: "hidden" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 100px 90px 90px 80px 44px", padding: "10px 16px", borderBottom: "2px solid var(--border)", fontSize: 10, fontWeight: 600, color: "var(--ink3)", textTransform: "uppercase", letterSpacing: .5 }}>
-                <div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div>Location</div><div>Photo</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 100px 90px 90px 80px 68px", padding: "10px 16px", borderBottom: "2px solid var(--border)", fontSize: 10, fontWeight: 600, color: "var(--ink3)", textTransform: "uppercase", letterSpacing: .5 }}>
+                <div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div>Location</div><div>Photos</div>
               </div>
               <div style={{ maxHeight: 360, overflowY: "auto" }}>
                 {timelog.slice().reverse().slice(0, 50).map(t => (
-                  <div key={t.id} style={{ display: "grid", gridTemplateColumns: "1fr 100px 90px 90px 80px 44px", padding: "9px 16px", borderBottom: "1px solid #f3f2ee", fontSize: 13, alignItems: "center" }}>
+                  <div key={t.id} style={{ display: "grid", gridTemplateColumns: "1fr 100px 90px 90px 80px 68px", padding: "9px 16px", borderBottom: "1px solid #f3f2ee", fontSize: 13, alignItems: "center" }}>
                     <div style={{ fontWeight: 500 }}>{t.empName} <span style={{ fontSize: 10, color: "var(--ink3)" }}>({t.dept})</span></div>
                     <div style={{ color: "var(--ink2)" }}>{t.date}</div>
                     <div>{t.clockIn}</div>
                     <div>{t.clockOut || <span style={{ color: "var(--green)", fontWeight: 500, fontSize: 11 }}>Active</span>}</div>
                     <div>{t.location ? <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: t.location.distance <= GEOFENCE_RADIUS ? "var(--green-bg)" : "var(--red-bg)", color: t.location.distance <= GEOFENCE_RADIUS ? "var(--green)" : "var(--red)", fontWeight: 600 }} title={t.location.site || ""}>📍 {t.location.distance}m{t.location.site ? ` · ${t.location.site.split(" ")[0]}` : ""}</span> : <span style={{ fontSize: 10, color: "var(--ink3)" }}>—</span>}</div>
-                    <div>{t.photo ? <img src={t.photo} alt="" onClick={() => setModal({ type: "viewPhoto", photo: t.photo, empName: t.empName, date: t.date, time: t.clockIn })} style={{ width: 30, height: 30, borderRadius: 6, objectFit: "cover", cursor: "pointer", border: "1px solid var(--border)" }} /> : <span style={{ fontSize: 10, color: "var(--ink3)" }}>—</span>}</div>
+                    <div style={{ display: "flex", gap: 3 }}>
+                      {t.photo ? <img src={t.photo} alt="" onClick={() => setModal({ type: "viewPhoto", photo: t.photo, empName: t.empName, date: t.date, time: t.clockIn, label: "Clock In" })} style={{ width: 28, height: 28, borderRadius: 5, objectFit: "cover", cursor: "pointer", border: "1px solid var(--border)" }} title="Clock In" /> : <span style={{ width: 28, height: 28, borderRadius: 5, background: "var(--surface2)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "var(--ink3)" }}>IN</span>}
+                      {t.photoOut ? <img src={t.photoOut} alt="" onClick={() => setModal({ type: "viewPhoto", photo: t.photoOut, empName: t.empName, date: t.date, time: t.clockOut, label: "Clock Out" })} style={{ width: 28, height: 28, borderRadius: 5, objectFit: "cover", cursor: "pointer", border: "1px solid var(--border)" }} title="Clock Out" /> : <span style={{ width: 28, height: 28, borderRadius: 5, background: "var(--surface2)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "var(--ink3)" }}>OUT</span>}
+                    </div>
                   </div>
                 ))}
                 {timelog.length === 0 && <div style={{ padding: 20, textAlign: "center", color: "var(--ink3)", fontSize: 13 }}>No time entries yet. Employees can clock in from their view.</div>}
@@ -1689,7 +1692,7 @@ function SKRosterInner() {
                 <div style={{ textAlign: "center" }}>
                   <img src={modal.photo} alt="" style={{ width: 240, height: 240, borderRadius: 14, objectFit: "cover", border: "2px solid var(--border)", marginBottom: 12 }} />
                   <div style={{ fontSize: 14, fontWeight: 600 }}>{modal.empName}</div>
-                  <div style={{ fontSize: 12, color: "var(--ink2)" }}>{modal.date} at {modal.time}</div>
+                  <div style={{ fontSize: 12, color: "var(--ink2)" }}>{modal.label ? modal.label + " — " : ""}{modal.date} at {modal.time}</div>
                 </div>
               </>
             )}
