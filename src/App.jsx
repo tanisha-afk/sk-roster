@@ -527,6 +527,38 @@ function SKRosterInner() {
 
   const getShift = (empId, dayIso) => roster[wk]?.[empId]?.[dayIso] || null;
 
+  const copyPreviousWeek = async () => {
+    var prevStart = new Date(weekStart);
+    prevStart.setDate(prevStart.getDate() - 7);
+    var prevWk = weekKey(prevStart);
+    var prevData = roster[prevWk];
+    if (!prevData || Object.keys(prevData).length === 0) {
+      notify("No roster data in previous week to copy");
+      return;
+    }
+    // Map previous week's day offsets to this week's dates
+    var prevDays = getDays(prevStart);
+    var thisDays = getDays(weekStart);
+    var next = { ...roster };
+    if (!next[wk]) next[wk] = {};
+    var count = 0;
+    Object.keys(prevData).forEach(function(empId) {
+      if (!next[wk][empId]) next[wk][empId] = {};
+      prevDays.forEach(function(prevDay, i) {
+        var prevIso = fmtDate(prevDay, "iso");
+        var thisIso = fmtDate(thisDays[i], "iso");
+        var shift = prevData[empId]?.[prevIso];
+        if (shift && !next[wk][empId][thisIso]) {
+          next[wk][empId][thisIso] = shift;
+          count++;
+        }
+      });
+    });
+    setRoster(next);
+    await persist(STORE_KEYS.roster, next);
+    notify("Copied " + count + " shifts from previous week");
+  };
+
   // ─── LEAVE ACTIONS ─────────────────────────────────────────────────
   const submitLeave = async (data) => {
     const next = [...leaves, { ...data, id: `lv-${Date.now()}`, status: "pending", submittedDate: fmtDate(new Date(), "iso"), employeeId: user.id, employeeName: user.name, department: user.dept }];
@@ -983,11 +1015,13 @@ function SKRosterInner() {
                 <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
                   <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>Rostered Hours This Week</div>
                   {(() => {
-                    const weekDays = days.map(d => fmtDate(d, "iso"));
+                    const thisWeekStart = getWeekStart(new Date());
+                    const thisWeekDays = getDays(thisWeekStart).map(d => fmtDate(d, "iso"));
+                    const thisWk = weekKey(thisWeekStart);
                     const empHours = employees.map(emp => {
                       let total = 0;
-                      weekDays.forEach(d => {
-                        const shift = getShift(emp.id, d);
+                      thisWeekDays.forEach(d => {
+                        const shift = roster[thisWk]?.[emp.id]?.[d] || null;
                         if (shift && SHIFTS[shift]) total += (SHIFTS[shift].hours - 0.5);
                       });
                       return { emp, total: Math.round(total * 10) / 10 };
@@ -1131,10 +1165,12 @@ function SKRosterInner() {
               <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)", padding: "18px 20px" }}>
                 <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ink2)", marginBottom: 10 }}>My Hours This Week</div>
                 {(() => {
-                  const weekDays = days.map(d => fmtDate(d, "iso"));
+                  const thisWeekStart = getWeekStart(new Date());
+                  const thisWeekDays = getDays(thisWeekStart).map(d => fmtDate(d, "iso"));
+                  const thisWk = weekKey(thisWeekStart);
                   let total = 0;
-                  const dayShifts = weekDays.map(d => {
-                    const shift = getShift(user.id, d);
+                  const dayShifts = thisWeekDays.map(d => {
+                    const shift = roster[thisWk]?.[user.id]?.[d] || null;
                     if (shift && SHIFTS[shift]) total += (SHIFTS[shift].hours - 0.5);
                     return { date: d, shift };
                   });
@@ -1214,6 +1250,7 @@ function SKRosterInner() {
                   </select>
                 )}
                 {isManager && !canSeeAllDepts && <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink2)" }}>Production</span>}
+                {isManager && <button onClick={function() { if (window.confirm("Copy all shifts from previous week to this week? Existing shifts won't be overwritten.")) copyPreviousWeek(); }} style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontSize: 11, fontFamily: "inherit", color: "var(--ink2)" }}>Copy Prev Week</button>}
                 {isManager && <button onClick={() => {
                   // Build a clean HTML table for printing
                   const weekLabel = `${fmtDate(days[0])} – ${fmtDate(days[6])}`;
@@ -1345,6 +1382,37 @@ function SKRosterInner() {
                     })}
                   </div>
                 ))}
+              </div>
+              {/* Daily shift totals */}
+              <div style={{ display: "grid", gridTemplateColumns: "180px repeat(7, 1fr)", borderTop: "2px solid var(--border)" }}>
+                <div style={{ padding: "6px 14px", fontSize: 10, fontWeight: 600, color: "var(--ink3)" }}>MORNING</div>
+                {days.map(function(d, i) {
+                  var iso = fmtDate(d, "iso");
+                  var count = 0;
+                  filtered.forEach(function(emp) {
+                    var s = getShift(emp.id, iso);
+                    if (s && SHIFTS[s]) {
+                      var label = (SHIFTS[s].label || "").toLowerCase();
+                      if (label.indexOf("morning") >= 0 || label.indexOf("early") >= 0 || label.indexOf("office") >= 0) count++;
+                    }
+                  });
+                  return <div key={i} style={{ padding: "6px 4px", textAlign: "center", fontSize: 13, fontWeight: 700, color: count > 0 ? "var(--accent)" : "var(--ink3)", borderLeft: "1px solid var(--border)" }}>{count || "-"}</div>;
+                })}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "180px repeat(7, 1fr)", borderTop: "1px solid #f3f2ee", borderRadius: "0 0 12px 12px" }}>
+                <div style={{ padding: "6px 14px", fontSize: 10, fontWeight: 600, color: "var(--ink3)" }}>AFTERNOON</div>
+                {days.map(function(d, i) {
+                  var iso = fmtDate(d, "iso");
+                  var count = 0;
+                  filtered.forEach(function(emp) {
+                    var s = getShift(emp.id, iso);
+                    if (s && SHIFTS[s]) {
+                      var label = (SHIFTS[s].label || "").toLowerCase();
+                      if (label.indexOf("afternoon") >= 0) count++;
+                    }
+                  });
+                  return <div key={i} style={{ padding: "6px 4px", textAlign: "center", fontSize: 13, fontWeight: 700, color: count > 0 ? "#1D4ED8" : "var(--ink3)", borderLeft: "1px solid var(--border)" }}>{count || "-"}</div>;
+                })}
               </div>
             </div>
           </div>
