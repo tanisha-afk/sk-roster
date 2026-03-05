@@ -903,26 +903,49 @@ function SKRosterInner() {
                 {(() => {
                   const todayIso = fmtDate(new Date(), "iso");
                   const deptEmps = canSeeAllDepts ? employees : employees.filter(e => e.dept === "Production");
-                  const shiftCounts = {};
-                  deptEmps.forEach(emp => {
-                    const shift = getShift(emp.id, todayIso);
+                  var morningShifts = {}, afternoonShifts = {};
+                  deptEmps.forEach(function(emp) {
+                    var shift = getShift(emp.id, todayIso);
                     if (shift && SHIFTS[shift]) {
-                      shiftCounts[shift] = (shiftCounts[shift] || 0) + 1;
+                      var label = (SHIFTS[shift].label || "").toLowerCase();
+                      if (label.indexOf("morning") >= 0 || label.indexOf("early") >= 0 || label.indexOf("office") >= 0) {
+                        morningShifts[shift] = (morningShifts[shift] || 0) + 1;
+                      } else if (label.indexOf("afternoon") >= 0) {
+                        afternoonShifts[shift] = (afternoonShifts[shift] || 0) + 1;
+                      } else {
+                        morningShifts[shift] = (morningShifts[shift] || 0) + 1;
+                      }
                     }
                   });
-                  const total = Object.values(shiftCounts).reduce((a, b) => a + b, 0);
+                  var morningTotal = Object.values(morningShifts).reduce(function(a, b) { return a + b; }, 0);
+                  var afternoonTotal = Object.values(afternoonShifts).reduce(function(a, b) { return a + b; }, 0);
+                  var total = morningTotal + afternoonTotal;
                   return (
                     <>
-                      <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)", marginBottom: 8 }}>{total} <span style={{ fontSize: 14, fontWeight: 400, color: "var(--ink2)" }}>on shift today</span></div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        {Object.entries(shiftCounts).map(([k, count]) => (
-                          <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                            <span style={{ color: SHIFTS[k]?.color, fontWeight: 500 }}>{SHIFTS[k]?.label}</span>
-                            <span style={{ fontWeight: 600 }}>{count}</span>
-                          </div>
-                        ))}
-                        {total === 0 && <div style={{ fontSize: 12, color: "var(--ink3)" }}>No shifts rostered today</div>}
-                      </div>
+                      <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Fraunces', serif", color: "var(--accent)", marginBottom: 12 }}>{total} <span style={{ fontSize: 14, fontWeight: 400, color: "var(--ink2)" }}>on shift today</span></div>
+                      {morningTotal > 0 && (
+                        <div style={{ marginBottom: 10 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: "var(--ink3)", textTransform: "uppercase", letterSpacing: .5, marginBottom: 4 }}>Morning — {morningTotal}</div>
+                          {Object.entries(morningShifts).map(function(entry) { return (
+                            <div key={entry[0]} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, paddingLeft: 8 }}>
+                              <span style={{ color: SHIFTS[entry[0]]?.color, fontWeight: 500 }}>{SHIFTS[entry[0]]?.label}</span>
+                              <span style={{ fontWeight: 600 }}>{entry[1]}</span>
+                            </div>
+                          ); })}
+                        </div>
+                      )}
+                      {afternoonTotal > 0 && (
+                        <div style={{ marginBottom: 10 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: "var(--ink3)", textTransform: "uppercase", letterSpacing: .5, marginBottom: 4 }}>Afternoon — {afternoonTotal}</div>
+                          {Object.entries(afternoonShifts).map(function(entry) { return (
+                            <div key={entry[0]} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, paddingLeft: 8 }}>
+                              <span style={{ color: SHIFTS[entry[0]]?.color, fontWeight: 500 }}>{SHIFTS[entry[0]]?.label}</span>
+                              <span style={{ fontWeight: 600 }}>{entry[1]}</span>
+                            </div>
+                          ); })}
+                        </div>
+                      )}
+                      {total === 0 && <div style={{ fontSize: 12, color: "var(--ink3)" }}>No shifts rostered today</div>}
                     </>
                   );
                 })()}
