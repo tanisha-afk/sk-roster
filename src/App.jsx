@@ -1196,12 +1196,23 @@ function SKRosterInner() {
                   const weekLabel = `${fmtDate(days[0])} – ${fmtDate(days[6])}`;
                   const dayHeaders = days.map(d => `<th style="padding:6px 4px;text-align:center;font-size:11px;border:1px solid #ddd;background:#f5f5f0">${fmtDate(d, "day")}<br/>${fmtDate(d, "num")}</th>`).join("");
                   const rows = [...filtered].sort((a, b) => {
-                    const todayIso = fmtDate(new Date(), "iso");
-                    const shiftA = getShift(a.id, todayIso);
-                    const shiftB = getShift(b.id, todayIso);
-                    const shiftKeys = Object.keys(SHIFTS);
-                    const idxA = shiftA ? shiftKeys.indexOf(shiftA) : 999;
-                    const idxB = shiftB ? shiftKeys.indexOf(shiftB) : 999;
+                    var shiftKeys = Object.keys(SHIFTS);
+                    function getMostCommonShift(empId) {
+                      var counts = {};
+                      days.forEach(function(d) {
+                        var s = getShift(empId, fmtDate(d, "iso"));
+                        if (s) counts[s] = (counts[s] || 0) + 1;
+                      });
+                      var best = null, bestCount = 0;
+                      Object.keys(counts).forEach(function(k) {
+                        if (counts[k] > bestCount) { best = k; bestCount = counts[k]; }
+                      });
+                      return best;
+                    }
+                    var shiftA = getMostCommonShift(a.id);
+                    var shiftB = getMostCommonShift(b.id);
+                    var idxA = shiftA ? shiftKeys.indexOf(shiftA) : 999;
+                    var idxB = shiftB ? shiftKeys.indexOf(shiftB) : 999;
                     if (idxA !== idxB) return idxA - idxB;
                     return a.name.localeCompare(b.name);
                   }).map(emp => {
@@ -1248,13 +1259,24 @@ function SKRosterInner() {
               </div>
               <div style={{ maxHeight: 480, overflowY: "auto" }}>
                 {[...filtered].sort((a, b) => {
-                  // Sort by earliest shift this week, then alphabetically
-                  const todayIso = fmtDate(new Date(), "iso");
-                  const shiftA = getShift(a.id, todayIso);
-                  const shiftB = getShift(b.id, todayIso);
-                  const shiftKeys = Object.keys(SHIFTS);
-                  const idxA = shiftA ? shiftKeys.indexOf(shiftA) : 999;
-                  const idxB = shiftB ? shiftKeys.indexOf(shiftB) : 999;
+                  // Sort by most common shift this week, then alphabetically
+                  var shiftKeys = Object.keys(SHIFTS);
+                  function getMostCommonShift(empId) {
+                    var counts = {};
+                    days.forEach(function(d) {
+                      var s = getShift(empId, fmtDate(d, "iso"));
+                      if (s) counts[s] = (counts[s] || 0) + 1;
+                    });
+                    var best = null, bestCount = 0;
+                    Object.keys(counts).forEach(function(k) {
+                      if (counts[k] > bestCount) { best = k; bestCount = counts[k]; }
+                    });
+                    return best;
+                  }
+                  var shiftA = getMostCommonShift(a.id);
+                  var shiftB = getMostCommonShift(b.id);
+                  var idxA = shiftA ? shiftKeys.indexOf(shiftA) : 999;
+                  var idxB = shiftB ? shiftKeys.indexOf(shiftB) : 999;
                   if (idxA !== idxB) return idxA - idxB;
                   return a.name.localeCompare(b.name);
                 }).map(emp => (
