@@ -1747,6 +1747,44 @@ function SKRosterInner() {
         )}
       </main>
 
+      {/* ──── ALERT POPUP ──── */}
+      {(() => {
+        var unreadAlerts = notifications.filter(function(n) {
+          return n.category === "alert" && !n.readBy?.includes(user.id) && (n.targetEmpIds === "all" || (Array.isArray(n.targetEmpIds) && n.targetEmpIds.includes(user.id)));
+        });
+        if (unreadAlerts.length === 0) return null;
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+            <div style={{ background: "#fff", borderRadius: 16, padding: "28px 24px", maxWidth: 400, width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#DC2626", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 4, background: "#DC2626" }}></span>
+                {unreadAlerts.length === 1 ? "Important Alert" : unreadAlerts.length + " Alerts"}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                {unreadAlerts.map(function(alert) {
+                  return (
+                    <div key={alert.id} style={{ padding: "14px 16px", borderRadius: 10, background: "#FFF7ED", border: "1px solid #FED7AA" }}>
+                      <div style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.5, color: "#1a1a1a" }}>{alert.message}</div>
+                      <div style={{ fontSize: 10, color: "#999", marginTop: 6 }}>{new Date(alert.createdAt).toLocaleString("en-AU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button onClick={function() {
+                var updated = notifications.map(function(n) {
+                  if (n.category === "alert" && !n.readBy?.includes(user.id)) {
+                    return { ...n, readBy: [...(n.readBy || []), user.id] };
+                  }
+                  return n;
+                });
+                setNotifications(updated);
+                save(STORE_KEYS.notifications, updated);
+              }} style={{ width: "100%", padding: "12px 20px", borderRadius: 10, border: "none", background: "var(--accent)", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit', sans-serif" }}>Got it</button>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ──── MODALS ──── */}
       {modal && (
         <div style={overlaySt} onClick={() => setModal(null)}>
