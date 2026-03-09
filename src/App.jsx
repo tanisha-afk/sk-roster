@@ -2064,7 +2064,7 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
   const [annual, setAnnual] = useState(emp.leaveBalance.annual);
   const [personal, setPersonal] = useState(emp.leaveBalance.personal || 0);
   const [employmentType, setEmploymentType] = useState(emp.employmentType || "full-time");
-  const [daysPerWeek, setDaysPerWeek] = useState(emp.daysPerWeek || 5);
+  const [daysPerWeek, setDaysPerWeek] = useState(emp.daysPerWeek || 3);
 
   const numInput = { width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface2)", color: "var(--ink)", fontSize: 14, fontFamily: "inherit", outline: "none", textAlign: "center" };
 
