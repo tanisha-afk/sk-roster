@@ -60,46 +60,46 @@ const SEED_EMPLOYEES = [
   { name: "Raj Krishna", role: "Accounts Manager", dept: "Accounts", rate: 64.90, pin: "4104", leaveInit: { annual: 35.1, personal: 19.1 }, empType: "full-time" },
   { name: "Gopi Dhamija", role: "Production Supervisor", dept: "Production", rate: 40.87, pin: "8160", leaveInit: { annual: 29.1, personal: 13.4 }, empType: "full-time" },
   { name: "Prateek Kumar", role: "Production Supervisor", dept: "Production", rate: 37.30, pin: "1681", leaveInit: { annual: 7.1, personal: 6.5 }, empType: "full-time" },
-  { name: "Prabhkeerat Singh", role: "Sales Representative", dept: "Sales", rate: 32.96, pin: "1547", leaveInit: { annual: 20.3, personal: 18.9 }, empType: "full-time" },
+  { name: "Prabhkeerat Singh", role: "Sales Representative", dept: "Sales", rate: 32.96, pin: "1547", leaveInit: { annual: 20.3, personal: 18.9 }, empType: "part-time" },
   { name: "Mohit Sivia", role: "Sales Representative", dept: "Sales", rate: 48.08, pin: "9738", leaveInit: { annual: 10.6, personal: 10.8 }, empType: "full-time" },
   // Process Workers
   { name: "Bushar Ahmed", role: "Process Worker", dept: "Production", rate: 29.50, pin: "1943", leaveInit: { annual: 14.0, personal: 1.0 }, empType: "full-time" },
   { name: "Sandesh Adhikari", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3819", leaveInit: { annual: 9.1, personal: 1.5 }, empType: "full-time" },
-  { name: "Anannya Rehman Amiya", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5693", leaveInit: { annual: 0.2, personal: 0.1 }, empType: "full-time" },
-  { name: "Majid Ali", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9529", leaveInit: { annual: 7.6, personal: 1.7 }, empType: "full-time" },
+  { name: "Anannya Rehman Amiya", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5693", leaveInit: { annual: 0.2, personal: 0.1 }, empType: "part-time" },
+  { name: "Majid Ali", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9529", leaveInit: { annual: 7.6, personal: 1.7 }, empType: "part-time" },
   { name: "Tikaram Badari Sharma", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1380", leaveInit: { annual: 5.3, personal: 3.9 }, empType: "part-time" },
-  { name: "Kumaramanjunath Baleattiguppe Sadashivappa", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1797", leaveInit: { annual: 7.5, personal: 4.0 }, empType: "full-time" },
+  { name: "Kumaramanjunath Baleattiguppe Sadashivappa", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1797", leaveInit: { annual: 7.5, personal: 4.0 }, empType: "part-time" },
   { name: "Razia Bibi", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5316", leaveInit: { annual: 14.9, personal: 10.1 }, empType: "full-time" },
   { name: "Marites Cabaltera", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9821", leaveInit: { annual: 10.0, personal: 20.5 }, empType: "full-time" },
   { name: "Chetna Chetna", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6999", leaveInit: { annual: 12.0, personal: 3.8 }, empType: "full-time" },
-  { name: "Anita Dangi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "1354", leaveInit: { annual: 3.8, personal: 4.5 }, empType: "full-time" },
-  { name: "Eldefer Dequino", role: "Process Worker", dept: "Production", rate: 34.00, pin: "3608", leaveInit: { annual: 10.8, personal: 16.5 }, empType: "full-time" },
-  { name: "Tanjilalam Emon", role: "Process Worker", dept: "Production", rate: 32.00, pin: "3204", leaveInit: { annual: 6.4, personal: 1.3 }, empType: "full-time" },
+  { name: "Anita Dangi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "1354", leaveInit: { annual: 3.8, personal: 4.5 }, empType: "part-time" },
+  { name: "Eldefer Dequino", role: "Process Worker", dept: "Production", rate: 34.00, pin: "3608", leaveInit: { annual: 10.8, personal: 16.5 }, empType: "part-time" },
+  { name: "Tanjilalam Emon", role: "Process Worker", dept: "Production", rate: 32.00, pin: "3204", leaveInit: { annual: 6.4, personal: 1.3 }, empType: "part-time" },
   { name: "Louie Fortes", role: "Process Worker", dept: "Production", rate: 31.50, pin: "8533", leaveInit: { annual: 4.3, personal: 36.5 }, empType: "full-time" },
-  { name: "Jahid Hasan", role: "Process Worker", dept: "Production", rate: 32.00, pin: "1818", leaveInit: { annual: 1.7, personal: 0.1 }, empType: "full-time" },
-  { name: "Mdkamrul Hasan", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3996", leaveInit: { annual: 9.7, personal: 0.2 }, empType: "full-time" },
-  { name: "Nimra Habib", role: "Process Worker", dept: "Production", rate: 26.00, pin: "8823", leaveInit: { annual: 0.8, personal: 0.4 }, empType: "full-time" },
-  { name: "Navneet Kaur Virk", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5250", leaveInit: { annual: 2.4, personal: 1.2 }, empType: "full-time" },
+  { name: "Mdkamrul Hasan", role: "Process Worker", dept: "Production", rate: 26.00, pin: "3996", leaveInit: { annual: 9.7, personal: 0.2 }, empType: "part-time" },
+  { name: "Nimra Habib", role: "Process Worker", dept: "Production", rate: 26.00, pin: "8823", leaveInit: { annual: 0.8, personal: 0.4 }, empType: "part-time" },
   { name: "Sabnam Khadka", role: "Process Worker", dept: "Production", rate: 26.00, pin: "1284", leaveInit: { annual: 0.5, personal: 0.1 }, empType: "part-time" },
   { name: "Ashwani Kumar Kumar", role: "Process Worker", dept: "Production", rate: 26.00, pin: "2855", leaveInit: { annual: 12.5, personal: 3.8 }, empType: "full-time" },
   { name: "Sang Kyung Lee", role: "Process Worker", dept: "Production", rate: 29.50, pin: "5863", leaveInit: { annual: 10.6, personal: 0.6 }, empType: "full-time" },
   { name: "Manoj Manjunath", role: "Process Worker", dept: "Production", rate: 33.00, pin: "1309", leaveInit: { annual: 31.0, personal: 15.5 }, empType: "full-time" },
   { name: "Kundan Neupane", role: "Process Worker", dept: "Production", rate: 28.00, pin: "8233", leaveInit: { annual: 5.9, personal: 1.9 }, empType: "full-time" },
-  { name: "Sargam Nasrullah", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6406", leaveInit: { annual: 1.3, personal: 0.6 }, empType: "full-time" },
   { name: "Bora Ozcelik", role: "Process Worker", dept: "Production", rate: 28.50, pin: "4952", leaveInit: { annual: 9.1, personal: 0.2 }, empType: "full-time" },
-  { name: "Sreejan Kumar Paul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6970", leaveInit: { annual: 8.5, personal: 4.6 }, empType: "full-time" },
-  { name: "Amisha Pun", role: "Process Worker", dept: "Production", rate: 29.00, pin: "5165", leaveInit: { annual: 6.2, personal: 4.5 }, empType: "full-time" },
-  { name: "Miskur Rumi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "2602", leaveInit: { annual: 6.7, personal: 8.3 }, empType: "full-time" },
-  { name: "Yatin Sethi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "9273", leaveInit: { annual: 13.0, personal: 2.3 }, empType: "full-time" },
+  { name: "Sreejan Kumar Paul", role: "Process Worker", dept: "Production", rate: 29.00, pin: "6970", leaveInit: { annual: 8.5, personal: 4.6 }, empType: "part-time" },
+  { name: "Amisha Pun", role: "Process Worker", dept: "Production", rate: 29.00, pin: "5165", leaveInit: { annual: 6.2, personal: 4.5 }, empType: "part-time" },
+  { name: "Miskur Rumi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "2602", leaveInit: { annual: 6.7, personal: 8.3 }, empType: "part-time" },
+  { name: "Yatin Sethi", role: "Process Worker", dept: "Production", rate: 34.00, pin: "9273", leaveInit: { annual: 13.0, personal: 2.3 }, empType: "part-time" },
   { name: "Vijay Sharma", role: "Process Worker", dept: "Production", rate: 31.50, pin: "3271", leaveInit: { annual: 37.4, personal: 3.5 }, empType: "full-time" },
-  { name: "Nidhi Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "2501", leaveInit: { annual: 7.4, personal: 0.8 }, empType: "full-time" },
-  { name: "Harshit Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3823", leaveInit: { annual: 0.4, personal: 0.2 }, empType: "full-time" },
-  { name: "Karthik Shelvaraju", role: "Process Worker", dept: "Production", rate: 28.00, pin: "4934", leaveInit: { annual: 6.9, personal: 1.3 }, empType: "full-time" },
-  { name: "Abhay Singh", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5292", leaveInit: { annual: 5.4, personal: 2.4 }, empType: "full-time" },
+  { name: "Nidhi Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "2501", leaveInit: { annual: 7.4, personal: 0.8 }, empType: "part-time" },
+  { name: "Harshit Sharma", role: "Process Worker", dept: "Production", rate: 29.00, pin: "3823", leaveInit: { annual: 0.4, personal: 0.2 }, empType: "part-time" },
+  { name: "Karthik Shelvaraju", role: "Process Worker", dept: "Production", rate: 28.00, pin: "4934", leaveInit: { annual: 6.9, personal: 1.3 }, empType: "part-time" },
+  { name: "Abhay Singh", role: "Process Worker", dept: "Production", rate: 26.00, pin: "5292", leaveInit: { annual: 5.4, personal: 2.4 }, empType: "part-time" },
   { name: "Ragwinder Singh", role: "Process Worker", dept: "Production", rate: 29.50, pin: "9140", leaveInit: { annual: 27.5, personal: 1.2 }, empType: "full-time" },
   { name: "Rohan Sood", role: "Process Worker", dept: "Production", rate: 26.00, pin: "7269", leaveInit: { annual: 8.9, personal: 1.8 }, empType: "full-time" },
-  { name: "Samundra Tuladhar", role: "Process Worker", dept: "Production", rate: 34.00, pin: "4325", leaveInit: { annual: 27.8, personal: 7.8 }, empType: "full-time" },
-  { name: "Yash Yash", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9236", leaveInit: { annual: 2.0, personal: 3.1 }, empType: "full-time" },
+  { name: "Samundra Tuladhar", role: "Process Worker", dept: "Production", rate: 34.00, pin: "4325", leaveInit: { annual: 27.8, personal: 7.8 }, empType: "part-time" },
+  { name: "Yash Yash", role: "Process Worker", dept: "Production", rate: 29.00, pin: "9236", leaveInit: { annual: 2.0, personal: 3.1 }, empType: "part-time" },
+  { name: "Sharad Shrestha", role: "Process Worker", dept: "Production", rate: 26.00, pin: "8053", leaveInit: { annual: 0, personal: 0 }, empType: "part-time" },
+  { name: "Prince Chhabra", role: "Process Worker", dept: "Production", rate: 26.00, pin: "6614", leaveInit: { annual: 0, personal: 0 }, empType: "full-time" },
+  { name: "Anjil Ojha", role: "Process Worker", dept: "Production", rate: 26.00, pin: "7939", leaveInit: { annual: 0, personal: 0 }, empType: "full-time" },
   // Owner
   { name: "Tanisha Sharma", role: "Owner", dept: "Production", rate: 0, pin: "cherry2077", leaveInit: { annual: 50.4, personal: 25.2 }, empType: "full-time" },
 ];
@@ -803,9 +803,11 @@ function SKRosterInner() {
   // Managers (non-owner) see Production only; Owner & Accounts see all/filtered
   const canSeeAllDepts = user?.isOwner || user?.isAccounts;
   const filtered = useMemo(() => {
-    if (isManager && !canSeeAllDepts) return employees.filter(e => e.dept === "Production");
-    if (deptFilter === "All") return employees;
-    return employees.filter(e => e.dept === deptFilter);
+    let result;
+    if (isManager && !canSeeAllDepts) result = employees.filter(e => e.dept === "Production");
+    else if (deptFilter === "All") result = [...employees];
+    else result = employees.filter(e => e.dept === deptFilter);
+    return result.sort((a, b) => a.name.localeCompare(b.name));
   }, [employees, deptFilter, isManager, canSeeAllDepts]);
 
   // ─── LOADING ───────────────────────────────────────────────────────
@@ -1688,7 +1690,7 @@ function SKRosterInner() {
                     {(user?.isOwner || user?.isAccounts) && <span style={{ fontSize: 12, fontWeight: 600, color: "var(--ink2)" }}>${emp.hourlyRate}/hr</span>}
                   </div>
                   {user?.isOwner && <div style={{ fontSize: 10, color: "var(--ink3)", marginTop: 4 }}>PIN: {emp.pin}</div>}
-                  {(user?.isOwner || user?.isAccounts) && <button onClick={() => setModal({ type: "editLeaveBalance", emp })} style={{ fontSize: 10, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "4px 10px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginTop: 6 }}>Edit Leave Balances</button>}
+                  {(user?.isOwner || user?.isAccounts) && <button onClick={() => setModal({ type: "editLeaveBalance", emp })} style={{ fontSize: 10, color: "var(--accent)", background: "var(--accent-bg)", border: "none", padding: "4px 10px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginTop: 6 }}>Edit</button>}
                   {user?.isOwner && emp.id !== user.id && <button onClick={function() { if (window.confirm("Remove " + emp.name + " from the roster? This cannot be undone.")) { var next = employees.filter(function(e) { return e.id !== emp.id; }); setEmployees(next); persist(STORE_KEYS.employees, next); notify(emp.name + " removed"); } }} style={{ fontSize: 10, color: "#DC2626", background: "rgba(220,38,38,.08)", border: "none", padding: "4px 10px", borderRadius: 5, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, marginTop: 4 }}>Remove Employee</button>}
                 </div>
               ))}
@@ -1830,11 +1832,11 @@ function SKRosterInner() {
             )}
 
             {/* Edit Leave Balance */}
-            {modal.type === "editLeaveBalance" && <EditLeaveBalanceForm emp={modal.emp} onSave={(empId, newBalances, empType, dpw) => {
-              const updated = employees.map(e => e.id === empId ? { ...e, leaveBalance: newBalances, employmentType: empType, daysPerWeek: dpw } : e);
+            {modal.type === "editLeaveBalance" && <EditLeaveBalanceForm emp={modal.emp} onSave={(empId, newBalances, empType, dpw, rate) => {
+              const updated = employees.map(e => e.id === empId ? { ...e, leaveBalance: newBalances, employmentType: empType, daysPerWeek: dpw, hourlyRate: rate } : e);
               setEmployees(updated);
               persist(STORE_KEYS.employees, updated);
-              notify(`Leave balances updated for ${modal.emp.name}`);
+              notify(modal.emp.name + " updated");
               setModal(null);
             }} onCancel={() => setModal(null)} />}
 
@@ -2065,6 +2067,7 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
   const [personal, setPersonal] = useState(emp.leaveBalance.personal || 0);
   const [employmentType, setEmploymentType] = useState(emp.employmentType || "full-time");
   const [daysPerWeek, setDaysPerWeek] = useState(emp.daysPerWeek || 3);
+  const [hourlyRate, setHourlyRate] = useState(emp.hourlyRate || 0);
 
   function handleTypeChange(val) {
     setEmploymentType(val);
@@ -2075,9 +2078,13 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
 
   return (
     <>
-      <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Edit Leave Balances</h3>
+      <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Edit Employee</h3>
       <div style={{ fontSize: 13, color: "var(--ink2)", marginBottom: 14 }}>{emp.name}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div>
+          <label style={labelSt}>Hourly Rate ($)</label>
+          <input type="number" min={0} max={999} step={0.01} value={hourlyRate} onChange={e => setHourlyRate(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
+        </div>
         <div>
           <label style={labelSt}>Employment Type</label>
           <select value={employmentType} onChange={e => handleTypeChange(e.target.value)} style={{ ...numInput, textAlign: "left" }}>
@@ -2108,7 +2115,7 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
           <label style={labelSt}>Personal/Sick Leave (days)</label>
           <input type="number" min={0} max={999} step={0.01} value={personal} onChange={e => setPersonal(Math.max(0, parseFloat(e.target.value) || 0))} style={numInput} />
         </div>
-        <button onClick={() => onSave(emp.id, { annual, personal }, employmentType, daysPerWeek)} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>Save Balances</button>
+        <button onClick={() => onSave(emp.id, { annual, personal }, employmentType, daysPerWeek, hourlyRate)} style={{ ...btnPrimary, width: "100%", justifyContent: "center" }}>Save</button>
       </div>
     </>
   );
