@@ -2066,6 +2066,11 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
   const [employmentType, setEmploymentType] = useState(emp.employmentType || "full-time");
   const [daysPerWeek, setDaysPerWeek] = useState(emp.daysPerWeek || 3);
 
+  function handleTypeChange(val) {
+    setEmploymentType(val);
+    if (val === "part-time" && daysPerWeek >= 5) setDaysPerWeek(3);
+  }
+
   const numInput = { width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface2)", color: "var(--ink)", fontSize: 14, fontFamily: "inherit", outline: "none", textAlign: "center" };
 
   return (
@@ -2075,7 +2080,7 @@ function EditLeaveBalanceForm({ emp, onSave, onCancel }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <div>
           <label style={labelSt}>Employment Type</label>
-          <select value={employmentType} onChange={e => setEmploymentType(e.target.value)} style={{ ...numInput, textAlign: "left" }}>
+          <select value={employmentType} onChange={e => handleTypeChange(e.target.value)} style={{ ...numInput, textAlign: "left" }}>
             <option value="full-time">Full-time (accrues 1.67 AL / 0.83 PL per month)</option>
             <option value="part-time">Part-time (pro-rata accrual based on days per week)</option>
             <option value="casual">Casual (no leave accrual)</option>
