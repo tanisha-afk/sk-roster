@@ -926,7 +926,10 @@ function SKRosterInner() {
         {/* ──── DASHBOARD (Managers, Accounts, Owner) ──── */}
         {(isManager || isAccounts) && tab === "dashboard" && (
           <div className="fade-up">
-            <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif", marginBottom: 16 }}>Dashboard</h2>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Dashboard</h2>
+              {isManager && <button onClick={() => setModal({ type: "sendAlert" })} style={btnPrimary}>Send Alert</button>}
+            </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
 
               {/* Today's Headcount */}
@@ -1812,6 +1815,12 @@ function SKRosterInner() {
               setModal(null);
             }} onCancel={() => setModal(null)} />}
 
+            {modal.type === "sendAlert" && <SendAlertForm employees={employees} SHIFTS={SHIFTS} roster={roster} getWeekStart={getWeekStart} getDays={getDays} fmtDate={fmtDate} weekKey={weekKey} onSend={function(targetIds, message) {
+              sendNotification(targetIds, message, "alert");
+              setModal(null);
+              notify("Alert sent");
+            }} onCancel={() => setModal(null)} />}
+
             <button onClick={() => setModal(null)} style={{ marginTop: 12, width: "100%", padding: 9, borderRadius: 7, border: "1px solid var(--border)", background: "var(--surface2)", cursor: "pointer", fontFamily: "inherit", fontWeight: 500, fontSize: 12, color: "var(--ink2)" }}>Cancel</button>
           </div>
         </div>
@@ -2199,6 +2208,80 @@ function SwapForm({ employees, user, wk, days, getShift, SHIFTS, onSubmit, onCan
         </div>
         <div><label style={labelSt}>Reason</label><input value={reason} onChange={e => setReason(e.target.value)} placeholder="Why do you need to swap?" style={inputSt} /></div>
         <button onClick={() => { if (targetId && date) onSubmit({ targetId, targetName: others.find(e => e.id === targetId)?.name, date, reason, weekKey: wk }); }} disabled={!targetId || !date} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity: (!targetId || !date) ? .5 : 1 }}>Submit Swap Request</button>
+      </div>
+    </>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// SEND ALERT FORM
+// ═════════════════════════════════════════════════════════════════════
+function SendAlertForm({ employees, SHIFTS, roster, getWeekStart, getDays, fmtDate, weekKey, onSend, onCancel }) {
+  const [target, setTarget] = useState("all");
+  const [message, setMessage] = useState("");
+
+  function getTargetIds() {
+    if (target === "all") return "all";
+    if (target === "production") return employees.filter(function(e) { return e.dept === "Production"; }).map(function(e) { return e.id; });
+    if (target === "sales") return employees.filter(function(e) { return e.dept === "Sales"; }).map(function(e) { return e.id; });
+    if (target === "accounts") return employees.filter(function(e) { return e.dept === "Accounts"; }).map(function(e) { return e.id; });
+    if (target === "morning" || target === "afternoon") {
+      var todayStart = getWeekStart(new Date());
+      var todayWk = weekKey(todayStart);
+      var todayIso = fmtDate(new Date(), "iso");
+      var ids = [];
+      employees.forEach(function(emp) {
+        var shift = roster[todayWk]?.[emp.id]?.[todayIso] || null;
+        if (shift && SHIFTS[shift]) {
+          var label = (SHIFTS[shift].label || "").toLowerCase();
+          if (target === "morning" && (label.indexOf("morning") >= 0 || label.indexOf("early") >= 0 || label.indexOf("office") >= 0)) {
+            ids.push(emp.id);
+          } else if (target === "afternoon" && label.indexOf("afternoon") >= 0) {
+            ids.push(emp.id);
+          }
+        }
+      });
+      return ids;
+    }
+    return "all";
+  }
+
+  function getTargetLabel() {
+    if (target === "all") return "all employees";
+    if (target === "production") return "Production team";
+    if (target === "sales") return "Sales team";
+    if (target === "accounts") return "Accounts team";
+    if (target === "morning") return "today's morning shift";
+    if (target === "afternoon") return "today's afternoon shift";
+    return "";
+  }
+
+  var targetIds = getTargetIds();
+  var recipientCount = targetIds === "all" ? employees.length : targetIds.length;
+
+  return (
+    <>
+      <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 14 }}>Send Alert</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div>
+          <label style={labelSt}>Send to</label>
+          <select value={target} onChange={function(e) { setTarget(e.target.value); }} style={inputSt}>
+            <option value="all">All Employees</option>
+            <option value="production">Production Department</option>
+            <option value="sales">Sales Department</option>
+            <option value="accounts">Accounts Department</option>
+            <option value="morning">Today's Morning Shift</option>
+            <option value="afternoon">Today's Afternoon Shift</option>
+          </select>
+        </div>
+        <div>
+          <label style={labelSt}>Message</label>
+          <textarea value={message} onChange={function(e) { setMessage(e.target.value); }} placeholder="e.g. Tomorrow's morning shift is cancelled due to maintenance." rows={3} style={{ width: "100%", padding: "9px 12px", borderRadius: 7, border: "1px solid var(--border)", fontSize: 13, fontFamily: "'Outfit', sans-serif", background: "var(--surface2)", resize: "vertical" }} />
+        </div>
+        <div style={{ fontSize: 11, color: "var(--ink3)", padding: "6px 10px", borderRadius: 6, background: "var(--surface2)" }}>
+          This will notify <strong>{recipientCount}</strong> {recipientCount === 1 ? "person" : "people"} ({getTargetLabel()})
+        </div>
+        <button onClick={function() { if (message.trim()) onSend(targetIds, message.trim()); }} disabled={!message.trim() || recipientCount === 0} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity: (!message.trim() || recipientCount === 0) ? .5 : 1 }}>Send Alert</button>
       </div>
     </>
   );
