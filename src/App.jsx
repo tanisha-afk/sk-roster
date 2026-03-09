@@ -1731,7 +1731,7 @@ function SKRosterInner() {
                           <div style={{ fontSize: 10, fontWeight: 600, color: p.status === "approved" ? "#15803D" : p.status === "declined" ? "#DC2626" : "#D97706" }}>{p.status}</div>
                         </div>
                       </div>
-                      {(isManager || isAccounts) && p.status === "pending" && (
+                      {isManager && p.status === "pending" && (
                         <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                           <button onClick={() => handlePurchase(p.id, "approved", "payroll deduction")} style={{ padding: "5px 10px", borderRadius: 5, border: "none", background: "rgba(21,128,61,.1)", color: "#15803D", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Payroll</button>
                           <button onClick={() => handlePurchase(p.id, "approved", "paid cash")} style={{ padding: "5px 10px", borderRadius: 5, border: "none", background: "rgba(14,165,233,.1)", color: "#0EA5E9", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cash</button>
